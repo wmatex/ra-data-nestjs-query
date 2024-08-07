@@ -9,13 +9,15 @@ import {
   DELETE_MANY,
   UPDATE_MANY,
 } from 'ra-core';
+import { IntrospectionResult } from 'ra-data-graphql';
+import { ApolloQueryResult } from '@apollo/client';
 import getResponseParser from './getResponseParser';
 
 describe('getResponseParser', () => {
   it.each([[GET_LIST], [GET_MANY], [GET_MANY_REFERENCE]])(
     'returns the response expected for %s',
     (type) => {
-      const introspectionResults = {
+      const introspectionResults: IntrospectionResult = {
         resources: [
           {
             type: {
@@ -46,41 +48,39 @@ describe('getResponseParser', () => {
       };
       const response = {
         data: {
-          items: [
-            {
-              _typeName: 'Post',
-              id: 'post1',
-              title: 'title1',
-              author: { id: 'author1', firstName: 'Toto' },
-              coauthor: null,
-              tags: [
-                { id: 'tag1', name: 'tag1 name' },
-                { id: 'tag2', name: 'tag2 name' },
-              ],
-              embeddedJson: { foo: 'bar' },
-            },
-            {
-              _typeName: 'Post',
-              id: 'post2',
-              title: 'title2',
-              author: { id: 'author1', firstName: 'Toto' },
-              coauthor: null,
-              tags: [
-                { id: 'tag1', name: 'tag1 name' },
-                { id: 'tag3', name: 'tag3 name' },
-              ],
-              embeddedJson: { foo: 'bar' },
-            },
-          ],
-          total: { count: 100 },
+          items: {
+            nodes: [
+              {
+                _typeName: 'Post',
+                id: 'post1',
+                title: 'title1',
+                author: { id: 'author1', firstName: 'Toto' },
+                coauthor: null,
+                tags: [
+                  { id: 'tag1', name: 'tag1 name' },
+                  { id: 'tag2', name: 'tag2 name' },
+                ],
+                embeddedJson: { foo: 'bar' },
+              },
+              {
+                _typeName: 'Post',
+                id: 'post2',
+                title: 'title2',
+                author: { id: 'author1', firstName: 'Toto' },
+                coauthor: null,
+                tags: [
+                  { id: 'tag1', name: 'tag1 name' },
+                  { id: 'tag3', name: 'tag3 name' },
+                ],
+                embeddedJson: { foo: 'bar' },
+              },
+            ],
+          },
+          total: [{ count: { id: 100 } }],
         },
-      };
+      } as ApolloQueryResult<any>;
 
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response,
-        ),
-      ).toEqual({
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: [
           {
             id: 'post1',
@@ -114,7 +114,7 @@ describe('getResponseParser', () => {
 
   describe.each([[CREATE], [UPDATE], [DELETE]])('%s', (type) => {
     it(`returns the response expected for ${type}`, () => {
-      const introspectionResults = {
+      const introspectionResults: IntrospectionResult = {
         resources: [
           {
             type: {
@@ -158,12 +158,8 @@ describe('getResponseParser', () => {
             embeddedJson: { foo: 'bar' },
           },
         },
-      };
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response,
-        ),
-      ).toEqual({
+      } as ApolloQueryResult<any>;
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           id: 'post1',
           title: 'title1',
@@ -180,7 +176,7 @@ describe('getResponseParser', () => {
     });
 
     it(`returns the response expected for ${type} with simple arrays of values`, () => {
-      const introspectionResults = {
+      const introspectionResults: IntrospectionResult = {
         resources: [
           {
             type: {
@@ -225,12 +221,8 @@ describe('getResponseParser', () => {
             embeddedJson: { foo: 'bar' },
           },
         },
-      };
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response,
-        ),
-      ).toEqual({
+      } as ApolloQueryResult<any>;
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           id: 'post1',
           title: 'title1',
@@ -248,7 +240,7 @@ describe('getResponseParser', () => {
     });
 
     it(`returns the response expected for ${type} with aliases`, () => {
-      const introspectionResults = {
+      const introspectionResults: IntrospectionResult = {
         resources: [
           {
             type: {
@@ -292,13 +284,9 @@ describe('getResponseParser', () => {
             embeddedJson: { foo: 'bar' },
           },
         },
-      };
+      } as ApolloQueryResult<any>;
 
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response,
-        ),
-      ).toEqual({
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           aliasTitle: 'title1',
           author: { firstName: 'Toto', id: 'author1' },
@@ -317,7 +305,7 @@ describe('getResponseParser', () => {
     });
 
     it(`returns the response expected for ${type} with embedded objects`, () => {
-      const introspectionResults = {
+      const introspectionResults: IntrospectionResult = {
         resources: [
           {
             type: {
@@ -363,12 +351,8 @@ describe('getResponseParser', () => {
             },
           },
         },
-      };
-      expect(
-        getResponseParser(introspectionResults)(type, undefined, undefined)(
-          response,
-        ),
-      ).toEqual({
+      } as ApolloQueryResult<any>;
+      expect(getResponseParser(introspectionResults)(type)(response)).toEqual({
         data: {
           id: 'post1',
           title: 'title1',
@@ -388,7 +372,7 @@ describe('getResponseParser', () => {
   });
 
   it('returns the response expected for DELETE_MANY', () => {
-    const introspectionResults = {
+    const introspectionResults: IntrospectionResult = {
       resources: [
         {
           type: {
@@ -408,24 +392,22 @@ describe('getResponseParser', () => {
     const response = {
       data: {
         data: {
-          ids: [1, 2, 3, 4],
+          deletedCount: 4,
         },
       },
-    };
+    } as ApolloQueryResult<any>;
 
     expect(
-      getResponseParser(introspectionResults)(
-        DELETE_MANY,
-        undefined,
-        undefined,
-      )(response),
+      getResponseParser(introspectionResults)(DELETE_MANY, {
+        ids: [1, 2, 3, 4],
+      })(response),
     ).toEqual({
       data: [1, 2, 3, 4],
     });
   });
 
   it('returns the response expected for UPDATE_MANY', () => {
-    const introspectionResults = {
+    const introspectionResults: IntrospectionResult = {
       resources: [
         {
           type: {
@@ -445,17 +427,15 @@ describe('getResponseParser', () => {
     const response = {
       data: {
         data: {
-          ids: [1, 2, 3, 4],
+          updatedCount: 4,
         },
       },
-    };
+    } as ApolloQueryResult<any>;
 
     expect(
-      getResponseParser(introspectionResults)(
-        UPDATE_MANY,
-        undefined,
-        undefined,
-      )(response),
+      getResponseParser(introspectionResults)(UPDATE_MANY, {
+        ids: [1, 2, 3, 4],
+      })(response),
     ).toEqual({
       data: [1, 2, 3, 4],
     });

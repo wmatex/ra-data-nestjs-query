@@ -5,16 +5,12 @@ import {
   GET_MANY_REFERENCE,
   UPDATE_MANY,
 } from 'ra-core';
-import { IntrospectionResult, IntrospectedResource } from 'ra-data-graphql';
-import { IntrospectionField } from 'graphql';
+import { IntrospectionResult } from 'ra-data-graphql';
 import { ApolloQueryResult } from '@apollo/client';
+import { AggregateResult, Connection } from './types';
 
 export default (_introspectionResults: IntrospectionResult) =>
-  (
-    raFetchMethod: string,
-    _resource: IntrospectedResource,
-    _queryType: IntrospectionField,
-  ) =>
+  (raFetchMethod: string, params?: any) =>
   (response: ApolloQueryResult<any>) => {
     const data = response.data;
 
@@ -23,12 +19,16 @@ export default (_introspectionResults: IntrospectionResult) =>
       raFetchMethod === GET_MANY ||
       raFetchMethod === GET_MANY_REFERENCE
     ) {
+      const data = response.data as {
+        items: Connection;
+        total: AggregateResult[];
+      };
       return {
-        data: response.data.items.map(sanitizeResource),
-        total: response.data.total.count,
+        data: data.items.nodes.map(sanitizeResource),
+        total: data.total[0].count.id,
       };
     } else if (raFetchMethod === DELETE_MANY || raFetchMethod === UPDATE_MANY) {
-      return { data: sanitizeResource(data.data).ids };
+      return { data: params.ids };
     }
 
     return { data: sanitizeResource(data.data) };

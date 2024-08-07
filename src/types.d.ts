@@ -76,3 +76,17 @@ export type DeleteManyInput = {
 export type MutationDeleteManyArgs = {
   input: DeleteManyInput;
 };
+
+export type PageInfo = {
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+};
+
+export type Connection = {
+  nodes: any[];
+  pageInfo: PageInfo;
+};
+
+export type AggregateResult = {
+  count: { id: number };
+};

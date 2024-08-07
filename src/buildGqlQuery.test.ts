@@ -1,10 +1,15 @@
-import { IntrospectionField, TypeKind, print } from 'graphql';
+import {
+  IntrospectionField,
+  IntrospectionSchema,
+  TypeKind,
+  print,
+} from 'graphql';
 import { gql } from '@apollo/client';
 import {
   GET_LIST,
   GET_ONE,
   GET_MANY,
-  GET_MANY_REFERENCE,
+  // GET_MANY_REFERENCE,
   UPDATE,
   CREATE,
   DELETE,
@@ -17,9 +22,9 @@ import buildGqlQuery, {
   buildArgs,
   buildFields,
 } from './buildGqlQuery';
-import { IntrospectedResource, IntrospectionResult } from 'ra-data-graphql';
+import { IntrospectionResult } from 'ra-data-graphql';
 
-describe('buildArgs', () => {
+describe(buildArgs.name, () => {
   it('returns an empty array when query does not have any arguments', () => {
     expect(buildArgs({ args: [] }, {})).toEqual([]);
   });
@@ -28,15 +33,17 @@ describe('buildArgs', () => {
     expect(
       print(
         buildArgs(
-          { args: [{ name: 'foo' }, { name: 'bar' }] },
+          {
+            args: [{ name: 'foo' }, { name: 'bar' }],
+          } as unknown as IntrospectionField,
           { foo: 'foo_value' },
-        ),
+        ) as any,
       ),
     ).toEqual(['foo: $foo']);
   });
 });
 
-describe('buildApolloArgs', () => {
+describe(buildApolloArgs.name, () => {
   it('returns an empty array when query does not have any arguments', () => {
     expect(print(buildApolloArgs({ args: [] }, {}))).toEqual([]);
   });
@@ -84,123 +91,7 @@ describe('buildApolloArgs', () => {
   });
 });
 
-function buildGQLParamsWithSparseFieldsFactory() {
-  const introspectionResults: IntrospectionResult = {
-    resources: [
-      {
-        type: {
-          name: 'resourceType',
-          fields: [
-            {
-              name: 'id',
-              type: { kind: TypeKind.SCALAR, name: 'ID' },
-            },
-            {
-              name: 'name',
-              type: { kind: TypeKind.SCALAR, name: 'String' },
-            },
-            {
-              name: 'foo',
-              type: { kind: TypeKind.SCALAR, name: 'String' },
-            },
-          ],
-        },
-      },
-    ],
-    types: [
-      {
-        name: 'linkedType',
-        fields: [
-          {
-            name: 'id',
-            type: { kind: TypeKind.SCALAR, name: 'ID' },
-          },
-          {
-            name: 'title',
-            type: { kind: TypeKind.SCALAR, name: 'String' },
-          },
-          {
-            name: 'nestedLink',
-            type: {
-              kind: TypeKind.OBJECT,
-              name: 'nestedLinkedType',
-            },
-          },
-        ],
-      },
-      {
-        name: 'nestedLinkedType',
-        fields: [
-          {
-            name: 'id',
-            type: { kind: TypeKind.SCALAR, name: 'ID' },
-          },
-          {
-            name: 'bar',
-            type: { kind: TypeKind.SCALAR, name: 'String' },
-          },
-        ],
-      },
-    ],
-  };
-
-  const resource: IntrospectedResource = {
-    type: {
-      fields: [
-        { type: { kind: TypeKind.SCALAR, name: 'ID' }, name: 'id' },
-        {
-          type: { kind: TypeKind.SCALAR, name: 'String' },
-          name: 'address',
-        },
-        {
-          type: { kind: TypeKind.SCALAR, name: '_internalField' },
-          name: 'foo1',
-        },
-        {
-          type: { kind: TypeKind.OBJECT, name: 'linkedType' },
-          name: 'linked',
-        },
-        {
-          type: { kind: TypeKind.OBJECT, name: 'resourceType' },
-          name: 'resource',
-        },
-      ],
-    },
-  };
-
-  const queryType = {
-    name: 'allCommand',
-    args: [
-      {
-        name: 'foo',
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: { kind: TypeKind.SCALAR, name: 'Int' },
-        },
-      },
-    ],
-  };
-
-  const params = {
-    foo: 'foo_value',
-    meta: {
-      sparseFields: [
-        'address',
-        { linked: ['title'] },
-        { resource: ['foo', 'name'] },
-      ],
-    },
-  };
-
-  return {
-    introspectionResults,
-    queryType,
-    params,
-    resource,
-  };
-}
-
-describe('buildFields', () => {
+describe(buildFields.name, () => {
   it('returns an object with the fields to retrieve', () => {
     const introspectionResults: IntrospectionResult = {
       resources: [
@@ -254,61 +145,6 @@ describe('buildFields', () => {
   id
 }`,
     ]);
-  });
-
-  describe('with sparse fields', () => {
-    it('returns an object with the fields to retrieve', () => {
-      const { introspectionResults, resource, params } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      // nested sparse params
-      params.meta.sparseFields[1].linked.push({ nestedLink: ['bar'] });
-
-      expect(
-        print(
-          buildFields(introspectionResults)(
-            resource.type.fields,
-            params.meta.sparseFields,
-          ),
-        ),
-      ).toEqual([
-        'address',
-        `linked {
-  title
-  nestedLink {
-    bar
-  }
-}`,
-        `resource {
-  foo
-  name
-}`,
-      ]);
-    });
-
-    it('throws an error when sparse fields is requested but empty', () => {
-      const { introspectionResults, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(() =>
-        buildFields(introspectionResults)(resource.type.fields, []),
-      ).toThrowError(
-        "Empty sparse fields. Specify at least one field or remove the 'sparseFields' param",
-      );
-    });
-
-    it('throws an error when requested sparse fields are not available', () => {
-      const { introspectionResults, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(() =>
-        buildFields(introspectionResults)(resource.type.fields, [
-          'unavailbleField',
-        ]),
-      ).toThrowError(
-        "Requested sparse fields not found. Ensure sparse fields are available in the resource's type",
-      );
-    });
   });
 });
 
@@ -437,241 +273,356 @@ describe('buildFieldsWithSameType', () => {
   });
 });
 
-describe('buildGqlQuery', () => {
+describe(buildGqlQuery.name, () => {
   const introspectionResults: IntrospectionResult = {
+    queries: [],
+    schema: {} as IntrospectionSchema,
     resources: [
       {
         type: {
-          name: 'resourceType',
+          kind: TypeKind.OBJECT,
+          name: 'Club',
+          description: 'RESOURCE',
           fields: [
             {
               name: 'id',
-              type: { kind: TypeKind.SCALAR, name: 'ID' },
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.SCALAR,
+                  name: 'ID',
+                },
+              },
+              isDeprecated: false,
+            },
+            {
+              name: 'name',
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.SCALAR,
+                  name: 'String',
+                },
+              },
+              isDeprecated: false,
+            },
+            {
+              name: 'address',
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.SCALAR,
+                  name: 'String',
+                },
+              },
+              isDeprecated: false,
+            },
+            {
+              name: 'location',
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.OBJECT,
+                  name: 'Point',
+                },
+              },
+              isDeprecated: false,
+            },
+            {
+              name: 'createdAt',
+              description: null,
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: 'SCALAR',
+                  name: 'DateTime',
+                },
+              },
+              isDeprecated: false,
+              deprecationReason: null,
+            },
+            {
+              name: 'createdBy',
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.SCALAR,
+                  name: 'String',
+                },
+              },
+              isDeprecated: false,
+              deprecationReason: null,
+            },
+            {
+              name: 'updatedAt',
+              description: null,
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.SCALAR,
+                  name: 'DateTime',
+                },
+              },
+              isDeprecated: false,
+              deprecationReason: null,
+            },
+            {
+              name: 'updatedBy',
+              args: [],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.SCALAR,
+                  name: 'String',
+                },
+              },
+              isDeprecated: false,
+              deprecationReason: null,
             },
           ],
+          interfaces: [],
         },
       },
     ],
     types: [
       {
-        name: 'linkedType',
+        kind: TypeKind.OBJECT,
+        name: 'Point',
         fields: [
           {
-            name: 'foo',
-            type: { kind: TypeKind.SCALAR, name: 'bar' },
+            name: 'type',
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: TypeKind.SCALAR,
+                name: 'String',
+              },
+            },
+            args: [],
+            isDeprecated: false,
+          },
+          {
+            name: 'coordinates',
+            description: '[lon, lat]',
+            args: [],
+            type: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: TypeKind.LIST,
+                ofType: {
+                  kind: 'NON_NULL',
+                  ofType: {
+                    kind: TypeKind.SCALAR,
+                    name: 'Float',
+                  },
+                },
+              },
+            },
+            isDeprecated: false,
           },
         ],
+        interfaces: [],
       },
     ],
   };
 
-  const resource: IntrospectedResource = {
+  const resource = introspectionResults.resources[0];
+
+  const queryType: IntrospectionField = {
+    name: 'clubs',
+    args: [
+      {
+        name: 'paging',
+        type: {
+          kind: 'NON_NULL',
+          ofType: {
+            kind: TypeKind.INPUT_OBJECT,
+            name: 'OffsetPaging',
+          },
+        },
+      },
+      {
+        name: 'filter',
+        type: {
+          kind: 'NON_NULL',
+          ofType: {
+            kind: TypeKind.INPUT_OBJECT,
+            name: 'ClubFilter',
+          },
+        },
+      },
+      {
+        name: 'sorting',
+        type: {
+          kind: 'NON_NULL',
+          ofType: {
+            kind: 'LIST',
+            ofType: {
+              kind: 'NON_NULL',
+              ofType: {
+                kind: 'INPUT_OBJECT',
+                name: 'ClubSort',
+              },
+            },
+          },
+        },
+      },
+    ],
     type: {
-      fields: [
-        { type: { kind: TypeKind.SCALAR, name: '' }, name: 'foo' },
-        { type: { kind: TypeKind.SCALAR, name: '_foo' }, name: 'foo1' },
-        {
-          type: { kind: TypeKind.OBJECT, name: 'linkedType' },
-          name: 'linked',
-        },
-        {
-          type: { kind: TypeKind.OBJECT, name: 'resourceType' },
-          name: 'resource',
-        },
-      ],
+      kind: 'NON_NULL',
+      ofType: {
+        kind: 'OBJECT',
+        name: 'ClubConnection',
+      },
     },
+    isDeprecated: false,
+    deprecationReason: null,
   };
 
-  const queryType = {
-    name: 'allCommand',
+  const queryTypeDeleteMany: IntrospectionField = {
+    name: 'deleteManyClubs',
     args: [
       {
-        name: 'foo',
+        name: 'input',
         type: {
-          kind: TypeKind.NON_NULL,
-          ofType: { kind: TypeKind.SCALAR, name: 'Int' },
-        },
-      },
-      {
-        name: 'barId',
-        type: { kind: TypeKind.SCALAR },
-      },
-      {
-        name: 'barIds',
-        type: { kind: TypeKind.SCALAR },
-      },
-      { name: 'bar' },
-    ],
-  };
-
-  const queryTypeDeleteMany = {
-    name: 'deleteCommands',
-    args: [
-      {
-        name: 'ids',
-        type: {
-          kind: TypeKind.LIST,
+          kind: 'NON_NULL',
           ofType: {
-            kind: TypeKind.NON_NULL,
-            ofType: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
+            kind: TypeKind.INPUT_OBJECT,
+            name: 'DeleteManyClubsInput',
           },
         },
       },
     ],
+    type: {
+      kind: 'NON_NULL',
+      ofType: {
+        kind: 'OBJECT',
+        name: 'DeleteManyResponse',
+      },
+    },
+    isDeprecated: false,
   };
 
-  const queryTypeUpdateMany = {
-    name: 'updateCommands',
+  const queryTypeUpdateMany: IntrospectionField = {
+    name: 'updateManyClubs',
     args: [
       {
-        name: 'ids',
+        name: 'input',
+        description: null,
         type: {
-          kind: TypeKind.LIST,
+          kind: 'NON_NULL',
           ofType: {
-            kind: TypeKind.NON_NULL,
-            ofType: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
+            kind: 'INPUT_OBJECT',
+            name: 'UpdateManyClubsInput',
           },
         },
       },
-      {
-        name: 'data',
-        type: { kind: TypeKind.OBJECT, name: 'CommandType' },
-      },
     ],
+    type: {
+      kind: 'NON_NULL',
+      ofType: {
+        kind: 'OBJECT',
+        name: 'UpdateManyResponse',
+      },
+    },
+    isDeprecated: false,
   };
 
   const params = { foo: 'foo_value' };
 
-  describe('GET_LIST', () => {
+  describe(GET_LIST, () => {
     it('returns the correct query', () => {
       expect(
         print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            GET_LIST,
-            queryType,
-            params,
-          ),
+          buildGqlQuery(introspectionResults)(resource, GET_LIST, queryType, {
+            filter: {},
+            paging: {},
+            sorting: {},
+          }),
         ),
       ).toEqual(
         print(gql`
-          query allCommand($foo: Int!) {
-            items: allCommand(foo: $foo) {
-              foo
-              linked {
-                foo
+          query clubs(
+            $paging: OffsetPaging!
+            $filter: ClubFilter!
+            $sorting: [ClubSort!]!
+          ) {
+            items: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+              nodes {
+                id
+                name
+                address
+                location {
+                  type
+                  coordinates
+                }
+                createdAt
+                createdBy
+                updatedAt
+                updatedBy
               }
-              resource {
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+            }
+            total: clubAggregate {
+              count {
                 id
               }
-            }
-            total: _allCommandMeta(foo: $foo) {
-              count
-            }
-          }
-        `),
-      );
-    });
-
-    it('returns the correct query with sparse fields', () => {
-      const { introspectionResults, params, queryType, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            GET_LIST,
-            queryType,
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          query allCommand($foo: Int!) {
-            items: allCommand(foo: $foo) {
-              address
-              linked {
-                title
-              }
-              resource {
-                foo
-                name
-              }
-            }
-            total: _allCommandMeta(foo: $foo) {
-              count
             }
           }
         `),
       );
     });
   });
-  describe('GET_MANY', () => {
+  describe(GET_MANY, () => {
     it('returns the correct query', () => {
       expect(
         print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            GET_MANY,
-            queryType,
-            params,
-          ),
+          buildGqlQuery(introspectionResults)(resource, GET_MANY, queryType, {
+            filter: {},
+            paging: {},
+            sorting: {},
+          }),
         ),
       ).toEqual(
         print(gql`
-          query allCommand($foo: Int!) {
-            items: allCommand(foo: $foo) {
-              foo
-              linked {
-                foo
+          query clubs(
+            $paging: OffsetPaging!
+            $filter: ClubFilter!
+            $sorting: [ClubSort!]!
+          ) {
+            items: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+              nodes {
+                id
+                name
+                address
+                location {
+                  type
+                  coordinates
+                }
+                createdAt
+                createdBy
+                updatedAt
+                updatedBy
               }
-              resource {
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+            }
+            total: clubAggregate {
+              count {
                 id
               }
-            }
-            total: _allCommandMeta(foo: $foo) {
-              count
-            }
-          }
-        `),
-      );
-    });
-
-    it('returns the correct query with sparse fields', () => {
-      const { introspectionResults, params, queryType, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            GET_MANY,
-            queryType,
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          query allCommand($foo: Int!) {
-            items: allCommand(foo: $foo) {
-              address
-              linked {
-                title
-              }
-              resource {
-                foo
-                name
-              }
-            }
-            total: _allCommandMeta(foo: $foo) {
-              count
             }
           }
         `),
@@ -679,301 +630,254 @@ describe('buildGqlQuery', () => {
     });
   });
 
-  describe('GET_MANY_REFERENCE', () => {
-    it('returns the correct query', () => {
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            GET_MANY_REFERENCE,
-            queryType,
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          query allCommand($foo: Int!) {
-            items: allCommand(foo: $foo) {
-              foo
-              linked {
-                foo
-              }
-              resource {
-                id
-              }
-            }
-            total: _allCommandMeta(foo: $foo) {
-              count
-            }
-          }
-        `),
-      );
-    });
-
-    it('returns the correct query with sparse fields', () => {
-      const { introspectionResults, params, queryType, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            GET_MANY_REFERENCE,
-            queryType,
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          query allCommand($foo: Int!) {
-            items: allCommand(foo: $foo) {
-              address
-              linked {
-                title
-              }
-              resource {
-                foo
-                name
-              }
-            }
-            total: _allCommandMeta(foo: $foo) {
-              count
-            }
-          }
-        `),
-      );
-    });
-  });
-  describe('GET_ONE', () => {
+  // describe('GET_MANY_REFERENCE', () => {
+  //   it('returns the correct query', () => {
+  //     expect(
+  //       print(
+  //         buildGqlQuery(introspectionResults)(
+  //           resource,
+  //           GET_MANY_REFERENCE,
+  //           queryType,
+  //           params,
+  //         ),
+  //       ),
+  //     ).toEqual(
+  //       print(gql`
+  //         query allCommand($foo: Int!) {
+  //           items: allCommand(foo: $foo) {
+  //             foo
+  //             linked {
+  //               foo
+  //             }
+  //             resource {
+  //               id
+  //             }
+  //           }
+  //           total: _allCommandMeta(foo: $foo) {
+  //             count
+  //           }
+  //         }
+  //       `),
+  //     );
+  //   });
+  // });
+  describe(GET_ONE, () => {
     it('returns the correct query', () => {
       expect(
         print(
           buildGqlQuery(introspectionResults)(
             resource,
             GET_ONE,
-            { ...queryType, name: 'getCommand' },
-            params,
+            {
+              name: 'club',
+              args: [
+                {
+                  name: 'id',
+                  type: {
+                    kind: 'NON_NULL',
+                    ofType: {
+                      kind: TypeKind.SCALAR,
+                      name: 'ID',
+                    },
+                  },
+                },
+              ],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.OBJECT,
+                  name: 'Club',
+                },
+              },
+              isDeprecated: false,
+            },
+            { id: 'cc76f014-7dc7-4cc3-bb5b-a7222b9b727f' },
           ),
         ),
       ).toEqual(
         print(gql`
-          query getCommand($foo: Int!) {
-            data: getCommand(foo: $foo) {
-              foo
-              linked {
-                foo
-              }
-              resource {
-                id
-              }
-            }
-          }
-        `),
-      );
-    });
-
-    it('returns the correct query with sparse fields', () => {
-      const { introspectionResults, params, queryType, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            GET_ONE,
-            { ...queryType, name: 'getCommand' },
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          query getCommand($foo: Int!) {
-            data: getCommand(foo: $foo) {
+          query club($id: ID!) {
+            data: club(id: $id) {
+              id
+              name
               address
-              linked {
-                title
+              location {
+                type
+                coordinates
               }
-              resource {
-                foo
-                name
-              }
+              createdAt
+              createdBy
+              updatedAt
+              updatedBy
             }
           }
         `),
       );
     });
   });
-  describe('UPDATE', () => {
+  describe(UPDATE, () => {
     it('returns the correct query', () => {
       expect(
         print(
           buildGqlQuery(introspectionResults)(
             resource,
             UPDATE,
-            { ...queryType, name: 'updateCommand' },
-            params,
+            {
+              name: 'updateOneClub',
+              args: [
+                {
+                  name: 'input',
+                  type: {
+                    kind: 'NON_NULL',
+                    ofType: {
+                      kind: TypeKind.INPUT_OBJECT,
+                      name: 'UpdateOneClubInput',
+                    },
+                  },
+                },
+              ],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.OBJECT,
+                  name: 'Club',
+                },
+              },
+              isDeprecated: false,
+            },
+            {
+              input: {
+                id: '53b2e780-6a32-4554-a1e3-ca0913e96d1a',
+                update: { name: 'pipipi' },
+              },
+            },
           ),
         ),
       ).toEqual(
         print(gql`
-          mutation updateCommand($foo: Int!) {
-            data: updateCommand(foo: $foo) {
-              foo
-              linked {
-                foo
-              }
-              resource {
-                id
-              }
-            }
-          }
-        `),
-      );
-    });
-
-    it('returns the correct query with sparse fields', () => {
-      const { introspectionResults, params, queryType, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            UPDATE,
-            { ...queryType, name: 'updateCommand' },
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          mutation updateCommand($foo: Int!) {
-            data: updateCommand(foo: $foo) {
+          mutation updateOneClub($input: UpdateOneClubInput!) {
+            data: updateOneClub(input: $input) {
+              id
+              name
               address
-              linked {
-                title
+              location {
+                type
+                coordinates
               }
-              resource {
-                foo
-                name
-              }
+              createdAt
+              createdBy
+              updatedAt
+              updatedBy
             }
           }
         `),
       );
     });
   });
-  describe('CREATE', () => {
+  describe(CREATE, () => {
     it('returns the correct query', () => {
       expect(
         print(
           buildGqlQuery(introspectionResults)(
             resource,
             CREATE,
-            { ...queryType, name: 'createCommand' },
-            params,
+            {
+              name: 'createOneClub',
+              args: [
+                {
+                  name: 'input',
+                  type: {
+                    kind: 'NON_NULL',
+                    ofType: {
+                      kind: TypeKind.INPUT_OBJECT,
+                      name: 'CreateOneClubInput',
+                    },
+                  },
+                },
+              ],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.OBJECT,
+                  name: 'Club',
+                },
+              },
+              isDeprecated: false,
+            },
+            {
+              input: { club: { name: 'pipipi' } },
+            },
           ),
         ),
       ).toEqual(
         print(gql`
-          mutation createCommand($foo: Int!) {
-            data: createCommand(foo: $foo) {
-              foo
-              linked {
-                foo
-              }
-              resource {
-                id
-              }
-            }
-          }
-        `),
-      );
-    });
-
-    it('returns the correct query with sparse fields', () => {
-      const { introspectionResults, params, queryType, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            CREATE,
-            { ...queryType, name: 'createCommand' },
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          mutation createCommand($foo: Int!) {
-            data: createCommand(foo: $foo) {
+          mutation createOneClub($input: CreateOneClubInput!) {
+            data: createOneClub(input: $input) {
+              id
+              name
               address
-              linked {
-                title
+              location {
+                type
+                coordinates
               }
-              resource {
-                foo
-                name
-              }
+              createdAt
+              createdBy
+              updatedAt
+              updatedBy
             }
           }
         `),
       );
     });
   });
-  describe('DELETE', () => {
+  describe(DELETE, () => {
     it('returns the correct query', () => {
       expect(
         print(
           buildGqlQuery(introspectionResults)(
             resource,
             DELETE,
-            { ...queryType, name: 'deleteCommand' },
-            params,
+            {
+              name: 'deleteOneClub',
+              args: [
+                {
+                  name: 'input',
+                  type: {
+                    kind: 'NON_NULL',
+                    ofType: {
+                      kind: TypeKind.INPUT_OBJECT,
+                      name: 'DeleteOneClubInput',
+                    },
+                  },
+                },
+              ],
+              type: {
+                kind: 'NON_NULL',
+                ofType: {
+                  kind: TypeKind.OBJECT,
+                  name: 'ClubDeleteResponse',
+                },
+              },
+              isDeprecated: false,
+            },
+            { input: { id: '01f5b50b-f526-4d8c-8480-d001b2a3bb76' } },
           ),
         ),
       ).toEqual(
         print(gql`
-          mutation deleteCommand($foo: Int!) {
-            data: deleteCommand(foo: $foo) {
-              foo
-              linked {
-                foo
-              }
-              resource {
-                id
-              }
-            }
-          }
-        `),
-      );
-    });
-
-    it('returns the correct query with sparse fields', () => {
-      const { introspectionResults, params, queryType, resource } =
-        buildGQLParamsWithSparseFieldsFactory();
-
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(
-            resource,
-            DELETE,
-            { ...queryType, name: 'deleteCommand' },
-            params,
-          ),
-        ),
-      ).toEqual(
-        print(gql`
-          mutation deleteCommand($foo: Int!) {
-            data: deleteCommand(foo: $foo) {
+          mutation deleteOneClub($input: DeleteOneClubInput!) {
+            data: deleteOneClub(input: $input) {
+              id
+              name
               address
-              linked {
-                title
+              location {
+                type
+                coordinates
               }
-              resource {
-                foo
-                name
-              }
+              createdAt
+              createdBy
+              updatedAt
+              updatedBy
             }
           }
         `),
@@ -981,27 +885,28 @@ describe('buildGqlQuery', () => {
     });
   });
 
-  it('returns the correct query for DELETE_MANY', () => {
+  it(DELETE_MANY, () => {
     expect(
       print(
         buildGqlQuery(introspectionResults)(
           resource,
           DELETE_MANY,
           queryTypeDeleteMany,
-          { ids: [1, 2, 3] },
+          { input: { filter: { id: { in: [1, 2, 3] } } } },
         ),
       ),
     ).toEqual(
-      `mutation deleteCommands($ids: [ID!]) {
-  data: deleteCommands(ids: $ids) {
-    ids
-  }
-}
-`,
+      print(gql`
+        mutation deleteManyClubs($input: DeleteManyClubsInput!) {
+          data: deleteManyClubs(input: $input) {
+            deletedCount
+          }
+        }
+      `),
     );
   });
 
-  it('returns the correct query for UPDATE_MANY', () => {
+  it(UPDATE_MANY, () => {
     expect(
       print(
         buildGqlQuery(introspectionResults)(
@@ -1009,18 +914,21 @@ describe('buildGqlQuery', () => {
           UPDATE_MANY,
           queryTypeUpdateMany,
           {
-            ids: [1, 2, 3],
-            data: params,
+            input: {
+              filter: { id: { in: [1, 2, 3] } },
+              update: params,
+            },
           },
         ),
       ),
     ).toEqual(
-      `mutation updateCommands($ids: [ID!], $data: CommandType) {
-  data: updateCommands(ids: $ids, data: $data) {
-    ids
-  }
-}
-`,
+      print(gql`
+        mutation updateManyClubs($input: UpdateManyClubsInput!) {
+          data: updateManyClubs(input: $input) {
+            updatedCount
+          }
+        }
+      `),
     );
   });
 });

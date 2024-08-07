@@ -5,19 +5,19 @@ import {
   TypeKind,
   TypeNode,
 } from 'graphql';
-import * as gqlTypes from 'graphql-ast-types';
+import * as t from 'graphql-ast-types';
 
 export const getGqlType = (
   type: IntrospectionType | IntrospectionListTypeRef | IntrospectionTypeRef,
 ): TypeNode => {
   switch (type.kind) {
     case TypeKind.LIST:
-      return gqlTypes.listType(getGqlType(type.ofType));
+      return t.listType(getGqlType(type.ofType));
 
     case TypeKind.NON_NULL:
-      return gqlTypes.nonNullType(getGqlType(type.ofType));
+      return t.nonNullType(getGqlType(type.ofType));
 
     default:
-      return gqlTypes.namedType(gqlTypes.name(type.name));
+      return t.namedType(t.name((type as any).name));
   }
 };

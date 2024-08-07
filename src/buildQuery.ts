@@ -10,13 +10,14 @@ export const buildQueryFactory =
     getResponseParserImpl = getResponseParser,
   ) =>
   (introspectionResults: IntrospectionResult): BuildQuery => {
+    console.log(introspectionResults);
     const knownResources = introspectionResults.resources.map(
       (r) => r.type.name,
     );
 
     const buildQuery: BuildQuery = (raFetchType, resourceName, params) => {
       const resource = introspectionResults.resources.find(
-        (r) => r.type.name === resourceName,
+        (r) => r.type.name.toLowerCase() === resourceName.toLowerCase(),
       );
 
       if (!resource) {
@@ -49,8 +50,7 @@ export const buildQueryFactory =
       );
       const parseResponse = getResponseParserImpl(introspectionResults)(
         raFetchType,
-        resource,
-        queryType,
+        params,
       );
 
       return {

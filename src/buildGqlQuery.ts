@@ -17,13 +17,15 @@ import {
   IntrospectionNamedTypeRef,
   IntrospectionObjectType,
   IntrospectionUnionType,
+  print,
   TypeKind,
   VariableDefinitionNode,
 } from 'graphql';
-import * as gqlTypes from 'graphql-ast-types';
+import * as t from 'graphql-ast-types';
 
 import getFinalType from './getFinalType';
 import { getGqlType } from './getGqlType';
+import pluralize from 'pluralize';
 
 type SparseField = string | { [k: string]: SparseField[] };
 type ExpandedSparseField = { linkedType?: string; fields: SparseField[] };
@@ -96,8 +98,6 @@ export default (introspectionResults: IntrospectionResult) =>
     const sparseFields = metaVariables.meta?.sparseFields;
     if (sparseFields) delete metaVariables.meta.sparseFields;
 
-    const metaArgs = buildArgs(queryType, metaVariables);
-
     const fields = buildFields(introspectionResults)(
       resource.type.fields,
       sparseFields,
@@ -108,82 +108,110 @@ export default (introspectionResults: IntrospectionResult) =>
       raFetchMethod === GET_MANY ||
       raFetchMethod === GET_MANY_REFERENCE
     ) {
-      return gqlTypes.document([
-        gqlTypes.operationDefinition(
+      return t.document([
+        t.operationDefinition(
           'query',
-          gqlTypes.selectionSet([
-            gqlTypes.field(
-              gqlTypes.name(queryType.name),
-              gqlTypes.name('items'),
+          t.selectionSet([
+            t.field(
+              t.name(queryType.name),
+              t.name('items'),
               args,
               null,
-              gqlTypes.selectionSet(fields),
+              t.selectionSet([
+                t.field(
+                  t.name('nodes'),
+                  null,
+                  null,
+                  null,
+                  t.selectionSet(fields),
+                ),
+                t.field(
+                  t.name('pageInfo'),
+                  null,
+                  null,
+                  null,
+                  t.selectionSet([
+                    t.field(t.name('hasNextPage')),
+                    t.field(t.name('hasPreviousPage')),
+                  ]),
+                ),
+              ]),
             ),
-            gqlTypes.field(
-              gqlTypes.name(`_${queryType.name}Meta`),
-              gqlTypes.name('total'),
-              metaArgs,
+            t.field(
+              t.name(`${pluralize(queryType.name, 1)}Aggregate`),
+              t.name('total'),
               null,
-              gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('count'))]),
+              null,
+              t.selectionSet([
+                t.field(
+                  t.name('count'),
+                  null,
+                  null,
+                  null,
+                  t.selectionSet([t.field(t.name('id'))]),
+                ),
+              ]),
             ),
           ]),
-          gqlTypes.name(queryType.name),
+          t.name(queryType.name),
           apolloArgs,
         ),
       ]);
     }
 
     if (raFetchMethod === DELETE) {
-      return gqlTypes.document([
-        gqlTypes.operationDefinition(
+      return t.document([
+        t.operationDefinition(
           'mutation',
-          gqlTypes.selectionSet([
-            gqlTypes.field(
-              gqlTypes.name(queryType.name),
-              gqlTypes.name('data'),
+          t.selectionSet([
+            t.field(
+              t.name(queryType.name),
+              t.name('data'),
               args,
               null,
-              gqlTypes.selectionSet(fields),
+              t.selectionSet(fields),
             ),
           ]),
-          gqlTypes.name(queryType.name),
+          t.name(queryType.name),
           apolloArgs,
         ),
       ]);
     }
 
     if (raFetchMethod === DELETE_MANY || raFetchMethod === UPDATE_MANY) {
-      return gqlTypes.document([
-        gqlTypes.operationDefinition(
+      const countFieldName =
+        raFetchMethod === DELETE_MANY ? 'deletedCount' : 'updatedCount';
+      return t.document([
+        t.operationDefinition(
           'mutation',
-          gqlTypes.selectionSet([
-            gqlTypes.field(
-              gqlTypes.name(queryType.name),
-              gqlTypes.name('data'),
+          t.selectionSet([
+            t.field(
+              t.name(queryType.name),
+              t.name('data'),
               args,
               null,
-              gqlTypes.selectionSet([gqlTypes.field(gqlTypes.name('ids'))]),
+              t.selectionSet([t.field(t.name(countFieldName))]),
             ),
           ]),
-          gqlTypes.name(queryType.name),
+          t.name(queryType.name),
           apolloArgs,
         ),
       ]);
     }
 
-    return gqlTypes.document([
-      gqlTypes.operationDefinition(
+    return t.document([
+      t.operationDefinition(
         QUERY_TYPES.includes(raFetchMethod) ? 'query' : 'mutation',
-        gqlTypes.selectionSet([
-          gqlTypes.field(
-            gqlTypes.name(queryType.name),
-            gqlTypes.name('data'),
+        t.selectionSet([
+          t.field(
+            t.name(queryType.name),
+            t.name('data'),
             args,
             null,
-            gqlTypes.selectionSet(fields),
+            t.selectionSet(fields),
           ),
         ]),
-        gqlTypes.name(queryType.name),
+        t.name(queryType.name),
         apolloArgs,
       ),
     ]);
@@ -204,7 +232,7 @@ export const buildFields =
       }
 
       if (type.kind !== TypeKind.OBJECT && type.kind !== TypeKind.INTERFACE) {
-        return [...acc, gqlTypes.field(gqlTypes.name(field.name))];
+        return [...acc, t.field(t.name(field.name))];
       }
 
       const linkedResource = introspectionResults.resources.find(
@@ -223,12 +251,12 @@ export const buildFields =
 
         return [
           ...acc,
-          gqlTypes.field(
-            gqlTypes.name(field.name),
+          t.field(
+            t.name(field.name),
             null,
             null,
             null,
-            gqlTypes.selectionSet(linkedResourceFields),
+            t.selectionSet(linkedResourceFields),
           ),
         ];
       }
@@ -243,12 +271,12 @@ export const buildFields =
 
         return [
           ...acc,
-          gqlTypes.field(
-            gqlTypes.name(field.name),
+          t.field(
+            t.name(field.name),
             null,
             null,
             null,
-            gqlTypes.selectionSet([
+            t.selectionSet([
               ...buildFragments(introspectionResults)(possibleTypes),
               ...buildFields(introspectionResults, [...paths, linkedType.name])(
                 (linkedType as IntrospectionObjectType).fields,
@@ -280,13 +308,13 @@ export const buildFragments =
 
       return [
         ...acc,
-        gqlTypes.inlineFragment(
-          gqlTypes.selectionSet(
+        t.inlineFragment(
+          t.selectionSet(
             buildFields(introspectionResults)(
               (linkedType as IntrospectionObjectType).fields,
             ),
           ),
-          gqlTypes.namedType(gqlTypes.name(type.name)),
+          t.namedType(t.name(type.name)),
         ),
       ];
     }, []);
@@ -307,10 +335,7 @@ export const buildArgs = (
     .reduce(
       (acc, arg) => [
         ...acc,
-        gqlTypes.argument(
-          gqlTypes.name(arg.name),
-          gqlTypes.variable(gqlTypes.name(arg.name)),
-        ),
+        t.argument(t.name(arg.name), t.variable(t.name(arg.name))),
       ],
       [],
     );
@@ -335,8 +360,8 @@ export const buildApolloArgs = (
     .reduce((acc, arg) => {
       return [
         ...acc,
-        gqlTypes.variableDefinition(
-          gqlTypes.variable(gqlTypes.name(arg.name)),
+        t.variableDefinition(
+          t.variable(t.name(arg.name)),
           getGqlType(arg.type),
         ),
       ];
