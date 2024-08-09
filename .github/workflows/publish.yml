@@ -1,0 +1,42 @@
+name: Node.js Package
+
+on:
+  release:
+    types: [created]
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  publish-npm:
+    name: Publish package to npm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: false
+
+      - name: Install Node.js v${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build application (cjs)
+        run: pnpm run build:cjs
+
+      - name: Build application (esm)
+        run: pnpm run build:esm
+
+      - name: Publish application
+        run: pnpm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
