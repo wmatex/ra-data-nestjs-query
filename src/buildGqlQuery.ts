@@ -17,7 +17,6 @@ import {
   IntrospectionNamedTypeRef,
   IntrospectionObjectType,
   IntrospectionUnionType,
-  print,
   TypeKind,
   VariableDefinitionNode,
 } from 'graphql';
@@ -25,7 +24,6 @@ import * as t from 'graphql-ast-types';
 
 import getFinalType from './getFinalType';
 import { getGqlType } from './getGqlType';
-import pluralize from 'pluralize';
 
 type SparseField = string | { [k: string]: SparseField[] };
 type ExpandedSparseField = { linkedType?: string; fields: SparseField[] };
@@ -114,7 +112,7 @@ export default (introspectionResults: IntrospectionResult) =>
           t.selectionSet([
             t.field(
               t.name(queryType.name),
-              t.name('items'),
+              t.name('data'),
               args,
               null,
               t.selectionSet([
@@ -135,21 +133,7 @@ export default (introspectionResults: IntrospectionResult) =>
                     t.field(t.name('hasPreviousPage')),
                   ]),
                 ),
-              ]),
-            ),
-            t.field(
-              t.name(`${pluralize(queryType.name, 1)}Aggregate`),
-              t.name('total'),
-              null,
-              null,
-              t.selectionSet([
-                t.field(
-                  t.name('count'),
-                  null,
-                  null,
-                  null,
-                  t.selectionSet([t.field(t.name('id'))]),
-                ),
+                t.field(t.name('totalCount')),
               ]),
             ),
           ]),

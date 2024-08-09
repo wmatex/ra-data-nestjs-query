@@ -1,16 +1,17 @@
-/* eslint-disable default-case */
 import {
   IntrospectionField,
   IntrospectionInputObjectType,
+  IntrospectionInputValue,
   IntrospectionNamedTypeRef,
   IntrospectionNonNullTypeRef,
   IntrospectionType,
+  TypeKind,
 } from 'graphql';
 import {
   GET_LIST,
   GET_ONE,
   GET_MANY,
-  // GET_MANY_REFERENCE,
+  GET_MANY_REFERENCE,
   CREATE,
   UPDATE,
   DELETE,
@@ -45,44 +46,41 @@ export default (introspectionResults: IntrospectionResult) =>
 
     switch (raFetchMethod) {
       case GET_LIST:
-        return getListVariables(resource, raFetchMethod, preparedParams);
+        return getListVariables(resource, preparedParams);
       case GET_MANY:
         return {
           filter: { id: { in: preparedParams.ids } },
         };
-      // case GET_MANY_REFERENCE: {
-      //   let variables = buildGetListVariables(introspectionResults)(
-      //     resource,
-      //     raFetchMethod,
-      //     preparedParams,
-      //   );
-
-      //   variables.filter = {
-      //     ...variables.filter,
-      //     [preparedParams.target]: { eq: preparedParams.id },
-      //   };
-
-      //   return variables;
-      // }
+      case GET_MANY_REFERENCE:
+        let variables = getListVariables(resource, preparedParams);
+        Object.assign(variables.filter, {
+          [preparedParams.target]: { id: { eq: preparedParams.id } },
+        });
+        return variables;
       case GET_ONE:
       case DELETE:
         return {
           id: preparedParams.id,
         };
       case DELETE_MANY:
-        return buildDeleteManyVariables(
-          resource,
-          raFetchMethod,
+        return buildDeleteManyVariables(introspectionResults)(
+          queryType,
           preparedParams,
         );
       case CREATE:
-        return buildCreateVariables(resource, raFetchMethod, preparedParams);
-      case UPDATE:
-        return buildUpdateVariables(resource, raFetchMethod, preparedParams);
-      case UPDATE_MANY: {
-        return buildUpdateManyVariables(
+        return buildCreateVariables(introspectionResults)(
           resource,
-          raFetchMethod,
+          queryType,
+          preparedParams,
+        );
+      case UPDATE:
+        return buildUpdateVariables(introspectionResults)(
+          queryType,
+          preparedParams,
+        );
+      case UPDATE_MANY: {
+        return buildUpdateManyVariables(introspectionResults)(
+          queryType,
           preparedParams,
         );
       }
@@ -158,8 +156,7 @@ const prepareParams = (
     if (
       param instanceof Object &&
       !Array.isArray(param) &&
-      arg &&
-      arg.type.kind === 'INPUT_OBJECT'
+      arg?.type.kind === TypeKind.INPUT_OBJECT
     ) {
       const args = (
         introspectionResults.types.find(
@@ -192,7 +189,6 @@ const prepareParams = (
 
 const getListVariables = (
   resource: IntrospectedResource,
-  raFetchMethod: string,
   params: any,
 ): QueryArgs => {
   let variables: QueryArgs = { filter: {} };
@@ -218,7 +214,7 @@ const getListVariables = (
         }
 
         const operator =
-          `${type.kind}:${type.name}` === 'SCALAR:String' ? 'like' : 'eq';
+          `${type.kind}:${type.name}` === 'SCALAR:String' ? 'iLike' : 'eq';
 
         return {
           ...acc,
@@ -247,48 +243,125 @@ const getListVariables = (
   return variables;
 };
 
-const buildCreateVariables = (
-  resource: IntrospectedResource,
-  raFetchMethod,
-  { data }: any,
-): MutationCreateOneArgs => ({
-  input: {
-    [camelCase(resource.type.name)]: data,
-  },
-});
+const buildCreateVariables =
+  (introspectionResult: IntrospectionResult) =>
+  (
+    resource: IntrospectedResource,
+    queryType: IntrospectionField,
+    { data }: any,
+  ): MutationCreateOneArgs =>
+    buildCleanObjectByQueryType(introspectionResult)(
+      {
+        input: {
+          [camelCase(resource.type.name)]: data,
+        },
+      },
+      queryType.args,
+    );
 
-const buildUpdateVariables = (
-  resource: IntrospectedResource,
-  raFetchMethod,
-  { id, data }: any,
-): MutationUpdateOneArgs => ({
-  input: {
-    id,
-    update: data,
-  },
-});
+const buildUpdateVariables =
+  (introspectionResult: IntrospectionResult) =>
+  (queryType: IntrospectionField, { id, data }: any): MutationUpdateOneArgs =>
+    buildCleanObjectByQueryType(introspectionResult)(
+      {
+        input: {
+          id,
+          update: data,
+        },
+      },
+      queryType.args,
+    );
 
-const buildUpdateManyVariables = (
-  resource: IntrospectedResource,
-  raFetchMethod,
-  { ids, data }: any,
-): MutationUpdateManyArgs => ({
-  input: {
-    filter: {
-      id: { in: ids },
-    },
-    update: data,
-  },
-});
+const buildUpdateManyVariables =
+  (introspectionResult: IntrospectionResult) =>
+  (queryType: IntrospectionField, { ids, data }: any): MutationUpdateManyArgs =>
+    buildCleanObjectByQueryType(introspectionResult)(
+      {
+        input: {
+          filter: {
+            id: { in: ids },
+          },
+          update: data,
+        },
+      },
+      queryType.args,
+    );
 
-const buildDeleteManyVariables = (
-  resource: IntrospectedResource,
-  raFetchMethod,
-  { ids }: any,
-): MutationDeleteManyArgs => ({
-  input: {
-    filter: {
-      id: { in: ids },
-    },
-  },
-});
+const buildDeleteManyVariables =
+  (introspectionResult: IntrospectionResult) =>
+  (queryType: IntrospectionField, { ids }: any): MutationDeleteManyArgs =>
+    buildCleanObjectByQueryType(introspectionResult)(
+      {
+        input: {
+          filter: {
+            id: { in: ids },
+          },
+        },
+      },
+      queryType.args,
+    );
+
+const buildCleanObjectByQueryType =
+  (introspectionResults: IntrospectionResult) =>
+  (obj: any, inputValues: readonly IntrospectionInputValue[]): any => {
+    if (typeof obj !== 'object' || obj === null || obj === undefined) {
+      return obj;
+    }
+
+    const inputValueMap = new Map(
+      inputValues.map((inputValue) => [inputValue.name, inputValue]),
+    );
+
+    return Object.entries(obj).reduce((acum, [curKey, curValue]) => {
+      const inputValue = inputValueMap.get(curKey);
+
+      if (!inputValue) {
+        console.debug('Field type not found, skipping', curKey);
+        return acum;
+      }
+
+      const type = getFinalType(inputValue.type);
+
+      if (inputValue.type.kind === TypeKind.LIST) {
+        if (!Array.isArray(curValue)) {
+          throw Error(`Expected an array at path '${curKey}'`);
+        }
+
+        return {
+          ...acum,
+          [curKey]: curValue.map((item) =>
+            buildCleanObjectByQueryType(introspectionResults)(item, [
+              type as unknown as IntrospectionInputValue,
+            ]),
+          ),
+        };
+      }
+
+      switch (type.kind) {
+        case TypeKind.ENUM:
+        case TypeKind.SCALAR:
+          return { ...acum, [curKey]: curValue };
+
+        case TypeKind.INPUT_OBJECT:
+          const actualType = introspectionResults.types.find(
+            (t) => type.name === t.name && type.kind === t.kind,
+          );
+
+          if (actualType?.kind !== TypeKind.INPUT_OBJECT) {
+            console.debug('Field type not found, skipping', curKey);
+            return acum;
+          }
+
+          return {
+            ...acum,
+            [curKey]: buildCleanObjectByQueryType(introspectionResults)(
+              curValue,
+              actualType.inputFields,
+            ),
+          };
+
+        default:
+          return acum;
+      }
+    }, {});
+  };

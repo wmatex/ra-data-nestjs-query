@@ -288,56 +288,60 @@ describe(buildGqlQuery.name, () => {
               name: 'id',
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.SCALAR,
                   name: 'ID',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             {
               name: 'name',
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.SCALAR,
                   name: 'String',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             {
               name: 'address',
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.SCALAR,
                   name: 'String',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             {
               name: 'location',
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.OBJECT,
                   name: 'Point',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             {
               name: 'createdAt',
               description: null,
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: 'SCALAR',
                   name: 'DateTime',
@@ -350,7 +354,7 @@ describe(buildGqlQuery.name, () => {
               name: 'createdBy',
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.SCALAR,
                   name: 'String',
@@ -364,7 +368,7 @@ describe(buildGqlQuery.name, () => {
               description: null,
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.SCALAR,
                   name: 'DateTime',
@@ -377,7 +381,7 @@ describe(buildGqlQuery.name, () => {
               name: 'updatedBy',
               args: [],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.SCALAR,
                   name: 'String',
@@ -399,7 +403,7 @@ describe(buildGqlQuery.name, () => {
           {
             name: 'type',
             type: {
-              kind: 'NON_NULL',
+              kind: TypeKind.NON_NULL,
               ofType: {
                 kind: TypeKind.SCALAR,
                 name: 'String',
@@ -407,17 +411,18 @@ describe(buildGqlQuery.name, () => {
             },
             args: [],
             isDeprecated: false,
+            deprecationReason: null,
           },
           {
             name: 'coordinates',
             description: '[lon, lat]',
             args: [],
             type: {
-              kind: 'NON_NULL',
+              kind: TypeKind.NON_NULL,
               ofType: {
                 kind: TypeKind.LIST,
                 ofType: {
-                  kind: 'NON_NULL',
+                  kind: TypeKind.NON_NULL,
                   ofType: {
                     kind: TypeKind.SCALAR,
                     name: 'Float',
@@ -426,6 +431,7 @@ describe(buildGqlQuery.name, () => {
               },
             },
             isDeprecated: false,
+            deprecationReason: null,
           },
         ],
         interfaces: [],
@@ -441,31 +447,33 @@ describe(buildGqlQuery.name, () => {
       {
         name: 'paging',
         type: {
-          kind: 'NON_NULL',
+          kind: TypeKind.NON_NULL,
           ofType: {
             kind: TypeKind.INPUT_OBJECT,
             name: 'OffsetPaging',
           },
         },
+        defaultValue: null,
       },
       {
         name: 'filter',
         type: {
-          kind: 'NON_NULL',
+          kind: TypeKind.NON_NULL,
           ofType: {
             kind: TypeKind.INPUT_OBJECT,
             name: 'ClubFilter',
           },
         },
+        defaultValue: null,
       },
       {
         name: 'sorting',
         type: {
-          kind: 'NON_NULL',
+          kind: TypeKind.NON_NULL,
           ofType: {
             kind: 'LIST',
             ofType: {
-              kind: 'NON_NULL',
+              kind: TypeKind.NON_NULL,
               ofType: {
                 kind: 'INPUT_OBJECT',
                 name: 'ClubSort',
@@ -473,10 +481,11 @@ describe(buildGqlQuery.name, () => {
             },
           },
         },
+        defaultValue: null,
       },
     ],
     type: {
-      kind: 'NON_NULL',
+      kind: TypeKind.NON_NULL,
       ofType: {
         kind: 'OBJECT',
         name: 'ClubConnection',
@@ -492,22 +501,24 @@ describe(buildGqlQuery.name, () => {
       {
         name: 'input',
         type: {
-          kind: 'NON_NULL',
+          kind: TypeKind.NON_NULL,
           ofType: {
             kind: TypeKind.INPUT_OBJECT,
             name: 'DeleteManyClubsInput',
           },
         },
+        defaultValue: null,
       },
     ],
     type: {
-      kind: 'NON_NULL',
+      kind: TypeKind.NON_NULL,
       ofType: {
         kind: 'OBJECT',
         name: 'DeleteManyResponse',
       },
     },
     isDeprecated: false,
+    deprecationReason: null,
   };
 
   const queryTypeUpdateMany: IntrospectionField = {
@@ -517,22 +528,24 @@ describe(buildGqlQuery.name, () => {
         name: 'input',
         description: null,
         type: {
-          kind: 'NON_NULL',
+          kind: TypeKind.NON_NULL,
           ofType: {
             kind: 'INPUT_OBJECT',
             name: 'UpdateManyClubsInput',
           },
         },
+        defaultValue: null,
       },
     ],
     type: {
-      kind: 'NON_NULL',
+      kind: TypeKind.NON_NULL,
       ofType: {
         kind: 'OBJECT',
         name: 'UpdateManyResponse',
       },
     },
     isDeprecated: false,
+    deprecationReason: null,
   };
 
   const params = { foo: 'foo_value' };
@@ -554,7 +567,7 @@ describe(buildGqlQuery.name, () => {
             $filter: ClubFilter!
             $sorting: [ClubSort!]!
           ) {
-            items: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
               nodes {
                 id
                 name
@@ -572,11 +585,7 @@ describe(buildGqlQuery.name, () => {
                 hasNextPage
                 hasPreviousPage
               }
-            }
-            total: clubAggregate {
-              count {
-                id
-              }
+              totalCount
             }
           }
         `),
@@ -600,7 +609,7 @@ describe(buildGqlQuery.name, () => {
             $filter: ClubFilter!
             $sorting: [ClubSort!]!
           ) {
-            items: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
               nodes {
                 id
                 name
@@ -618,11 +627,7 @@ describe(buildGqlQuery.name, () => {
                 hasNextPage
                 hasPreviousPage
               }
-            }
-            total: clubAggregate {
-              count {
-                id
-              }
+              totalCount
             }
           }
         `),
@@ -674,22 +679,24 @@ describe(buildGqlQuery.name, () => {
                 {
                   name: 'id',
                   type: {
-                    kind: 'NON_NULL',
+                    kind: TypeKind.NON_NULL,
                     ofType: {
                       kind: TypeKind.SCALAR,
                       name: 'ID',
                     },
                   },
+                  defaultValue: null,
                 },
               ],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.OBJECT,
                   name: 'Club',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             { id: 'cc76f014-7dc7-4cc3-bb5b-a7222b9b727f' },
           ),
@@ -728,22 +735,24 @@ describe(buildGqlQuery.name, () => {
                 {
                   name: 'input',
                   type: {
-                    kind: 'NON_NULL',
+                    kind: TypeKind.NON_NULL,
                     ofType: {
                       kind: TypeKind.INPUT_OBJECT,
                       name: 'UpdateOneClubInput',
                     },
                   },
+                  defaultValue: null,
                 },
               ],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.OBJECT,
                   name: 'Club',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             {
               input: {
@@ -787,22 +796,24 @@ describe(buildGqlQuery.name, () => {
                 {
                   name: 'input',
                   type: {
-                    kind: 'NON_NULL',
+                    kind: TypeKind.NON_NULL,
                     ofType: {
                       kind: TypeKind.INPUT_OBJECT,
                       name: 'CreateOneClubInput',
                     },
                   },
+                  defaultValue: null,
                 },
               ],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.OBJECT,
                   name: 'Club',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             {
               input: { club: { name: 'pipipi' } },
@@ -843,22 +854,24 @@ describe(buildGqlQuery.name, () => {
                 {
                   name: 'input',
                   type: {
-                    kind: 'NON_NULL',
+                    kind: TypeKind.NON_NULL,
                     ofType: {
                       kind: TypeKind.INPUT_OBJECT,
                       name: 'DeleteOneClubInput',
                     },
                   },
+                  defaultValue: null,
                 },
               ],
               type: {
-                kind: 'NON_NULL',
+                kind: TypeKind.NON_NULL,
                 ofType: {
                   kind: TypeKind.OBJECT,
                   name: 'ClubDeleteResponse',
                 },
               },
               isDeprecated: false,
+              deprecationReason: null,
             },
             { input: { id: '01f5b50b-f526-4d8c-8480-d001b2a3bb76' } },
           ),

@@ -10,6 +10,7 @@ export const buildQueryFactory =
     getResponseParserImpl = getResponseParser,
   ) =>
   (introspectionResults: IntrospectionResult): BuildQuery => {
+    console.debug(introspectionResults);
     const knownResources = introspectionResults.resources.map(
       (r) => r.type.name,
     );

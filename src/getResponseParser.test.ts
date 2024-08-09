@@ -48,10 +48,10 @@ describe('getResponseParser', () => {
       };
       const response = {
         data: {
-          items: {
+          data: {
             nodes: [
               {
-                _typeName: 'Post',
+                __typename: 'Post',
                 id: 'post1',
                 title: 'title1',
                 author: { id: 'author1', firstName: 'Toto' },
@@ -63,7 +63,7 @@ describe('getResponseParser', () => {
                 embeddedJson: { foo: 'bar' },
               },
               {
-                _typeName: 'Post',
+                __typename: 'Post',
                 id: 'post2',
                 title: 'title2',
                 author: { id: 'author1', firstName: 'Toto' },
@@ -75,8 +75,12 @@ describe('getResponseParser', () => {
                 embeddedJson: { foo: 'bar' },
               },
             ],
+            pageInfo: {
+              hasPreviousPage: false,
+              hasNextPage: true,
+            },
+            totalCount: 100,
           },
-          total: [{ count: { id: 100 } }],
         },
       } as ApolloQueryResult<any>;
 
@@ -146,7 +150,7 @@ describe('getResponseParser', () => {
       const response = {
         data: {
           data: {
-            _typeName: 'Post',
+            __typename: 'Post',
             id: 'post1',
             title: 'title1',
             author: { id: 'author1', firstName: 'Toto' },
@@ -208,7 +212,7 @@ describe('getResponseParser', () => {
       const response = {
         data: {
           data: {
-            _typeName: 'Post',
+            __typename: 'Post',
             id: 'post1',
             title: 'title1',
             author: { id: 'author1', firstName: 'Toto' },
@@ -272,7 +276,7 @@ describe('getResponseParser', () => {
       const response = {
         data: {
           data: {
-            _typeName: 'Post',
+            __typename: 'Post',
             id: 'post1',
             aliasTitle: 'title1',
             author: { id: 'author1', firstName: 'Toto' },
@@ -337,7 +341,7 @@ describe('getResponseParser', () => {
       const response = {
         data: {
           data: {
-            _typeName: 'Post',
+            __typename: 'Post',
             id: 'post1',
             title: 'title1',
             author: { id: 'author1', firstName: 'Toto' },

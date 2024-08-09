@@ -85,8 +85,5 @@ export type PageInfo = {
 export type Connection = {
   nodes: any[];
   pageInfo: PageInfo;
-};
-
-export type AggregateResult = {
-  count: { id: number };
+  totalCount: number;
 };

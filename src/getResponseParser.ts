@@ -7,7 +7,7 @@ import {
 } from 'ra-core';
 import { IntrospectionResult } from 'ra-data-graphql';
 import { ApolloQueryResult } from '@apollo/client';
-import { AggregateResult, Connection } from './types';
+import { Connection } from './types';
 
 export default (_introspectionResults: IntrospectionResult) =>
   (raFetchMethod: string, params?: any) =>
@@ -19,13 +19,10 @@ export default (_introspectionResults: IntrospectionResult) =>
       raFetchMethod === GET_MANY ||
       raFetchMethod === GET_MANY_REFERENCE
     ) {
-      const data = response.data as {
-        items: Connection;
-        total: AggregateResult[];
-      };
+      const data = response.data as { data: Connection };
       return {
-        data: data.items.nodes.map(sanitizeResource),
-        total: data.total[0].count.id,
+        data: data.data.nodes.map(sanitizeResource),
+        total: data.data.totalCount,
       };
     } else if (raFetchMethod === DELETE_MANY || raFetchMethod === UPDATE_MANY) {
       return { data: params.ids };
@@ -49,9 +46,9 @@ const sanitizeResource = (data: any) => {
     if (Array.isArray(dataForKey)) {
       if (
         typeof dataForKey[0] === 'object' &&
-        dataForKey[0] != null &&
+        dataForKey[0] !== null &&
         // If there is no id, it's not a reference but an embedded array
-        dataForKey[0].id != null
+        dataForKey[0].id !== null
       ) {
         return {
           ...acc,
@@ -65,9 +62,9 @@ const sanitizeResource = (data: any) => {
 
     if (
       typeof dataForKey === 'object' &&
-      dataForKey != null &&
+      dataForKey !== null &&
       // If there is no id, it's not a reference but an embedded object
-      dataForKey.id != null
+      dataForKey.id !== null
     ) {
       return {
         ...acc,
