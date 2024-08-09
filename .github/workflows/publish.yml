@@ -36,7 +36,7 @@ jobs:
       - name: Build application (esm)
         run: pnpm run build:esm
 
-      - name: Publish application
-        run: pnpm publish
+      - name: Publish application 🚀
+        run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
