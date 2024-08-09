@@ -1,9 +1,10 @@
 # ra-data-nestjs-query
 
-A GraphQL data provider for [react-admin](https://github.com/marmelab/react-admin/)
-built with [Apollo](https://www.apollodata.com/) and tailored to target a simple GraphQL implementation.
+[![Node.js CI](https://github.com/mrnkr/ra-data-nestjs-query/actions/workflows/ci.yml/badge.svg)](https://github.com/mrnkr/ra-data-nestjs-query/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/mrnkr/ra-data-nestjs-query/graph/badge.svg?token=8kjno3xUAy)](https://codecov.io/github/mrnkr/ra-data-nestjs-query)
 
-**This is an example implementation to show how to build a graphql adapter using `ra-data-graphql`.**
+A GraphQL data provider for [react-admin](https://github.com/marmelab/react-admin/)
+built with [Apollo](https://www.apollodata.com/) and tailored to target a GraphQL API built using [nestjs-query](https://tripss.github.io/nestjs-query/).
 
 - [Installation](#installation)
 - [Usage](#installation)
@@ -14,24 +15,30 @@ built with [Apollo](https://www.apollodata.com/) and tailored to target a simple
 Install with:
 
 ```sh
-npm install --save graphql ra-data-graphql-simple
+npm install --save graphql ra-data-nestjs-query
 ```
 
 or
 
 ```sh
-yarn add graphql ra-data-graphql-simple
+yarn add graphql ra-data-nestjs-query
+```
+
+or
+
+```sh
+pnpm i graphql ra-data-nestjs-query
 ```
 
 ## Usage
 
-The `ra-data-graphql-simple` package exposes a single function, which is a constructor for a `dataProvider` based on a GraphQL endpoint. When executed, this function calls the GraphQL endpoint, running an [introspection](https://graphql.org/learn/introspection/) query. It uses the result of this query (the GraphQL schema) to automatically configure the `dataProvider` accordingly.
+The `ra-data-nestjs-query` package exposes a single function, which is a constructor for a `dataProvider` based on a GraphQL endpoint. When executed, this function calls the GraphQL endpoint, running an [introspection](https://graphql.org/learn/introspection/) query. It uses the result of this query (the GraphQL schema) to automatically configure the `dataProvider` accordingly.
 
 ```jsx
 // in App.js
 import React from 'react';
 import { Component } from 'react';
-import buildGraphQLProvider from 'ra-data-graphql-simple';
+import buildGraphQLProvider, { buildQuery } from 'ra-data-nestjs-query';
 import { Admin, Resource } from 'react-admin';
 
 import { PostCreate, PostEdit, PostList } from './posts';
@@ -46,72 +53,12 @@ const App = () => (
 
 export default App;
 ```
+
 **Note**: the parser will generate additional `.id` properties for relation based types. These properties should be used as sources for reference based fields and inputs like `ReferenceField`: `<ReferenceField label="Author Name" source="author.id" reference="User">`.
 
 ## Expected GraphQL Schema
 
-The `ra-data-graphql-simple` function works against GraphQL servers that respect a certain GraphQL grammar. For instance, to handle all the actions on a `Post` resource, the GraphQL endpoint should support the following schema:
-
-```gql
-type Query {
-  Post(id: ID!): Post
-  allPosts(page: Int, perPage: Int, sortField: String, sortOrder: String, filter: PostFilter): [Post]
-  _allPostsMeta(page: Int, perPage: Int, sortField: String, sortOrder: String, filter: PostFilter): ListMetadata
-}
-
-type Mutation {
-  createPost(
-    title: String!
-    views: Int!
-    user_id: ID!
-  ): Post
-  updatePost(
-    id: ID!
-    title: String!
-    views: Int!
-    user_id: ID!
-  ): Post
-  updatePosts(
-    ids: [ID!]
-    data: PostBulkUpdatePayload
-  ) : { ids: [ID!]}
-  deletePost(id: ID!): Post
-  deletePosts(ids: [ID!]) : { ids: [ID!]}
-}
-
-type Post {
-    id: ID!
-    title: String!
-    views: Int!
-    user_id: ID!
-    User: User
-    Comments: [Comment]
-}
-
-input PostFilter {
-    q: String
-    id: ID
-    title: String
-    views: Int
-    views_lt: Int
-    views_lte: Int
-    views_gt: Int
-    views_gte: Int
-    user_id: ID
-}
-
-input PostBulkUpdatePayload {
-    title: String
-}
-
-type ListMetadata {
-    count: Int!
-}
-
-scalar Date
-```
-
-This is the grammar used e.g. by [marmelab/json-graphql-server](https://github.com/marmelab/json-graphql-server), a client-side GraphQL server used for test purposes.
+The `ra-data-nestjs-query` function works against GraphQL servers that respect the GraphQL grammar used by [nestjs-query](https://tripss.github.io/nestjs-query/).
 
 ## Options
 
@@ -135,7 +82,7 @@ The default behavior might not be optimized especially when dealing with referen
 
 ```js
 // in src/dataProvider.js
-import buildGraphQLProvider, { buildQuery } from 'ra-data-graphql-simple';
+import buildGraphQLProvider, { buildQuery } from 'ra-data-nestjs-query';
 
 const myBuildQuery = introspection => (fetchType, resource, params) => {
     const builtQuery = buildQuery(introspection)(fetchType, resource, params);
@@ -207,37 +154,6 @@ Pass the introspection options to the `buildApolloProvider` function:
 buildApolloProvider({ introspection: introspectionOptions });
 ```
 
-## Sparse Field Support for Queries and Mutations
-
-By default, for every API call this data provider returns all top level fields in your GraphQL schema as well as association objects containing the association's ID. If you would like to implement sparse field support for your requests, you can request the specific fields you want in a request by passing them to the dataProvider via the available [meta param](https://marmelab.com/react-admin/Actions.html#meta-parameter). For example,
-
-```js
-dataProvider.getOne(
-    'posts',
-    { 
-        id, 
-        meta: { 
-            sparseFields: [
-                'id', 
-                'title', 
-                { 
-                    comments: [
-                        'description', 
-                        { 
-                            author : [
-                                'name', 
-                                'email'
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    },
-);
-```
-This can increase efficiency, optimize client performance, improve security and reduce over-fetching. Also, it allows for the request of nested association fields beyond just their ID. It is available for all dataprovider actions.
-
 ## `DELETE_MANY` and `UPDATE_MANY` Optimizations
 
 Your GraphQL backend may not allow multiple deletions or updates in a single query. This provider defaults to simply making multiple requests to handle those. This is obviously not ideal but can be alleviated by supplying your own `ApolloClient` which could use the [apollo-link-batch-http](https://www.apollographql.com/docs/link/links/batch-http.html) link if your GraphQL backend support query batching.
@@ -247,5 +163,5 @@ Your GraphQL backend may not allow multiple deletions or updates in a single que
 Run the tests with this command:
 
 ```sh
-make test
+pnpm run test
 ```
