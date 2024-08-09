@@ -1,0 +1,42 @@
+name: Node.js CI
+
+on:
+  - push
+  - pull_request
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  run:
+    name: Build application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: false
+
+      - name: Install Node.js v${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build application
+        run: pnpm run build
+
+      - name: Test application
+        run: pnpm run test:cov
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
