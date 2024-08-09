@@ -1,7 +1,7 @@
 # ra-data-nestjs-query
 
 [![Node.js CI](https://github.com/mrnkr/ra-data-nestjs-query/actions/workflows/ci.yml/badge.svg)](https://github.com/mrnkr/ra-data-nestjs-query/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/mrnkr/ra-data-nestjs-query/graph/badge.svg?token=8kjno3xUAy)](https://codecov.io/github/mrnkr/ra-data-nestjs-query)
+[![codecov](https://codecov.io/github/mrnkr/ra-data-nestjs-query/branch/master/graph/badge.svg?token=8kjno3xUAy)](https://codecov.io/github/mrnkr/ra-data-nestjs-query)
 
 A GraphQL data provider for [react-admin](https://github.com/marmelab/react-admin/)
 built with [Apollo](https://www.apollodata.com/) and tailored to target a GraphQL API built using [nestjs-query](https://tripss.github.io/nestjs-query/).
