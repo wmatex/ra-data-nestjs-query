@@ -30,8 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      - name: Build application
-        run: pnpm run build
+      - name: Build application (cjs)
+        run: pnpm run build:cjs
+
+      - name: Build application (esm)
+        run: pnpm run build:esm
 
       - name: Test application
         run: pnpm run test:cov
