@@ -1,6 +1,7 @@
 # ra-data-nestjs-query
 
 [![npm version](https://badge.fury.io/js/ra-data-nestjs-query.svg)](https://badge.fury.io/js/ra-data-nestjs-query)
+![NPM Downloads](https://img.shields.io/npm/dm/ra-data-nestjs-query)
 [![Node.js CI](https://github.com/mrnkr/ra-data-nestjs-query/actions/workflows/ci.yml/badge.svg)](https://github.com/mrnkr/ra-data-nestjs-query/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/github/mrnkr/ra-data-nestjs-query/branch/master/graph/badge.svg?token=8kjno3xUAy)](https://codecov.io/github/mrnkr/ra-data-nestjs-query)
 
