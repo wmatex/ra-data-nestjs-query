@@ -54,7 +54,11 @@ export default (introspectionResults: IntrospectionResult) =>
       case GET_MANY_REFERENCE:
         let variables = getListVariables(resource, preparedParams);
         Object.assign(variables.filter, {
-          [preparedParams.target]: { id: { eq: preparedParams.id } },
+          [preparedParams.target]: {
+            id: Array.isArray(preparedParams.id)
+              ? { in: preparedParams.id }
+              : { eq: preparedParams.id },
+          },
         });
         return variables;
       case GET_ONE:

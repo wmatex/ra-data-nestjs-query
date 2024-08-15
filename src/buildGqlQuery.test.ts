@@ -1,28 +1,26 @@
-import {
-  IntrospectionField,
-  IntrospectionSchema,
-  TypeKind,
-  print,
-} from 'graphql';
+import { IntrospectionField, TypeKind, print } from 'graphql';
 import { gql } from '@apollo/client';
 import {
   GET_LIST,
   GET_ONE,
   GET_MANY,
-  // GET_MANY_REFERENCE,
+  GET_MANY_REFERENCE,
   UPDATE,
   CREATE,
   DELETE,
   DELETE_MANY,
   UPDATE_MANY,
 } from 'ra-core';
-
+import { IntrospectionResult } from 'ra-data-graphql';
 import buildGqlQuery, {
   buildApolloArgs,
   buildArgs,
   buildFields,
 } from './buildGqlQuery';
-import { IntrospectionResult } from 'ra-data-graphql';
+import { introspectionResult } from './test-introspection';
+
+const getResourceByName = (name: string) =>
+  introspectionResult.resources.find((resource) => resource.type.name === name);
 
 describe(buildArgs.name, () => {
   it('returns an empty array when query does not have any arguments', () => {
@@ -274,291 +272,22 @@ describe('buildFieldsWithSameType', () => {
 });
 
 describe(buildGqlQuery.name, () => {
-  const introspectionResults: IntrospectionResult = {
-    queries: [],
-    schema: {} as IntrospectionSchema,
-    resources: [
-      {
-        type: {
-          kind: TypeKind.OBJECT,
-          name: 'Club',
-          description: 'RESOURCE',
-          fields: [
-            {
-              name: 'id',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'ID',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'name',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'address',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'location',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.OBJECT,
-                  name: 'Point',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'createdAt',
-              description: null,
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: 'SCALAR',
-                  name: 'DateTime',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'createdBy',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'updatedAt',
-              description: null,
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'DateTime',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'updatedBy',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-          ],
-          interfaces: [],
-        },
-      },
-    ],
-    types: [
-      {
-        kind: TypeKind.OBJECT,
-        name: 'Point',
-        fields: [
-          {
-            name: 'type',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.SCALAR,
-                name: 'String',
-              },
-            },
-            args: [],
-            isDeprecated: false,
-            deprecationReason: null,
-          },
-          {
-            name: 'coordinates',
-            description: '[lon, lat]',
-            args: [],
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.LIST,
-                ofType: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.SCALAR,
-                    name: 'Float',
-                  },
-                },
-              },
-            },
-            isDeprecated: false,
-            deprecationReason: null,
-          },
-        ],
-        interfaces: [],
-      },
-    ],
-  };
-
-  const resource = introspectionResults.resources[0];
-
-  const queryType: IntrospectionField = {
-    name: 'clubs',
-    args: [
-      {
-        name: 'paging',
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: TypeKind.INPUT_OBJECT,
-            name: 'OffsetPaging',
-          },
-        },
-        defaultValue: null,
-      },
-      {
-        name: 'filter',
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: TypeKind.INPUT_OBJECT,
-            name: 'ClubFilter',
-          },
-        },
-        defaultValue: null,
-      },
-      {
-        name: 'sorting',
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: 'LIST',
-            ofType: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: 'INPUT_OBJECT',
-                name: 'ClubSort',
-              },
-            },
-          },
-        },
-        defaultValue: null,
-      },
-    ],
-    type: {
-      kind: TypeKind.NON_NULL,
-      ofType: {
-        kind: 'OBJECT',
-        name: 'ClubConnection',
-      },
-    },
-    isDeprecated: false,
-    deprecationReason: null,
-  };
-
-  const queryTypeDeleteMany: IntrospectionField = {
-    name: 'deleteManyClubs',
-    args: [
-      {
-        name: 'input',
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: TypeKind.INPUT_OBJECT,
-            name: 'DeleteManyClubsInput',
-          },
-        },
-        defaultValue: null,
-      },
-    ],
-    type: {
-      kind: TypeKind.NON_NULL,
-      ofType: {
-        kind: 'OBJECT',
-        name: 'DeleteManyResponse',
-      },
-    },
-    isDeprecated: false,
-    deprecationReason: null,
-  };
-
-  const queryTypeUpdateMany: IntrospectionField = {
-    name: 'updateManyClubs',
-    args: [
-      {
-        name: 'input',
-        description: null,
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: 'INPUT_OBJECT',
-            name: 'UpdateManyClubsInput',
-          },
-        },
-        defaultValue: null,
-      },
-    ],
-    type: {
-      kind: TypeKind.NON_NULL,
-      ofType: {
-        kind: 'OBJECT',
-        name: 'UpdateManyResponse',
-      },
-    },
-    isDeprecated: false,
-    deprecationReason: null,
-  };
-
-  const params = { foo: 'foo_value' };
+  const resource = getResourceByName('Club');
 
   describe(GET_LIST, () => {
     it('returns the correct query', () => {
       expect(
         print(
-          buildGqlQuery(introspectionResults)(resource, GET_LIST, queryType, {
-            filter: {},
-            paging: {},
-            sorting: {},
-          }),
+          buildGqlQuery(introspectionResult)(
+            resource,
+            GET_LIST,
+            resource[GET_LIST],
+            {
+              filter: {},
+              paging: {},
+              sorting: {},
+            },
+          ),
         ),
       ).toEqual(
         print(gql`
@@ -576,48 +305,10 @@ describe(buildGqlQuery.name, () => {
                   type
                   coordinates
                 }
-                createdAt
-                createdBy
-                updatedAt
-                updatedBy
-              }
-              pageInfo {
-                hasNextPage
-                hasPreviousPage
-              }
-              totalCount
-            }
-          }
-        `),
-      );
-    });
-  });
-  describe(GET_MANY, () => {
-    it('returns the correct query', () => {
-      expect(
-        print(
-          buildGqlQuery(introspectionResults)(resource, GET_MANY, queryType, {
-            filter: {},
-            paging: {},
-            sorting: {},
-          }),
-        ),
-      ).toEqual(
-        print(gql`
-          query clubs(
-            $paging: OffsetPaging!
-            $filter: ClubFilter!
-            $sorting: [ClubSort!]!
-          ) {
-            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
-              nodes {
-                id
-                name
-                address
-                location {
-                  type
-                  coordinates
-                }
+                phoneNumbers
+                emails
+                active
+                amenities
                 createdAt
                 createdBy
                 updatedAt
@@ -635,69 +326,118 @@ describe(buildGqlQuery.name, () => {
     });
   });
 
-  // describe('GET_MANY_REFERENCE', () => {
-  //   it('returns the correct query', () => {
-  //     expect(
-  //       print(
-  //         buildGqlQuery(introspectionResults)(
-  //           resource,
-  //           GET_MANY_REFERENCE,
-  //           queryType,
-  //           params,
-  //         ),
-  //       ),
-  //     ).toEqual(
-  //       print(gql`
-  //         query allCommand($foo: Int!) {
-  //           items: allCommand(foo: $foo) {
-  //             foo
-  //             linked {
-  //               foo
-  //             }
-  //             resource {
-  //               id
-  //             }
-  //           }
-  //           total: _allCommandMeta(foo: $foo) {
-  //             count
-  //           }
-  //         }
-  //       `),
-  //     );
-  //   });
-  // });
+  describe(GET_MANY, () => {
+    it('returns the correct query', () => {
+      expect(
+        print(
+          buildGqlQuery(introspectionResult)(
+            resource,
+            GET_MANY,
+            resource[GET_MANY],
+            {
+              filter: {},
+              paging: {},
+              sorting: {},
+            },
+          ),
+        ),
+      ).toEqual(
+        print(gql`
+          query clubs(
+            $paging: OffsetPaging!
+            $filter: ClubFilter!
+            $sorting: [ClubSort!]!
+          ) {
+            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+              nodes {
+                id
+                name
+                address
+                location {
+                  type
+                  coordinates
+                }
+                phoneNumbers
+                emails
+                active
+                amenities
+                createdAt
+                createdBy
+                updatedAt
+                updatedBy
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+              totalCount
+            }
+          }
+        `),
+      );
+    });
+  });
+
+  describe(GET_MANY_REFERENCE, () => {
+    it('returns the correct query', () => {
+      expect(
+        print(
+          buildGqlQuery(introspectionResult)(
+            resource,
+            GET_MANY_REFERENCE,
+            resource[GET_MANY_REFERENCE],
+            {
+              filter: {},
+              paging: {},
+              sorting: {},
+            },
+          ),
+        ),
+      ).toEqual(
+        print(gql`
+          query clubs(
+            $paging: OffsetPaging!
+            $filter: ClubFilter!
+            $sorting: [ClubSort!]!
+          ) {
+            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+              nodes {
+                id
+                name
+                address
+                location {
+                  type
+                  coordinates
+                }
+                phoneNumbers
+                emails
+                active
+                amenities
+                createdAt
+                createdBy
+                updatedAt
+                updatedBy
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+              totalCount
+            }
+          }
+        `),
+      );
+    });
+  });
+
   describe(GET_ONE, () => {
     it('returns the correct query', () => {
       expect(
         print(
-          buildGqlQuery(introspectionResults)(
+          buildGqlQuery(introspectionResult)(
             resource,
             GET_ONE,
-            {
-              name: 'club',
-              args: [
-                {
-                  name: 'id',
-                  type: {
-                    kind: TypeKind.NON_NULL,
-                    ofType: {
-                      kind: TypeKind.SCALAR,
-                      name: 'ID',
-                    },
-                  },
-                  defaultValue: null,
-                },
-              ],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.OBJECT,
-                  name: 'Club',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
+            resource[GET_ONE],
             { id: 'cc76f014-7dc7-4cc3-bb5b-a7222b9b727f' },
           ),
         ),
@@ -712,6 +452,10 @@ describe(buildGqlQuery.name, () => {
                 type
                 coordinates
               }
+              phoneNumbers
+              emails
+              active
+              amenities
               createdAt
               createdBy
               updatedAt
@@ -722,38 +466,15 @@ describe(buildGqlQuery.name, () => {
       );
     });
   });
+
   describe(UPDATE, () => {
     it('returns the correct query', () => {
       expect(
         print(
-          buildGqlQuery(introspectionResults)(
+          buildGqlQuery(introspectionResult)(
             resource,
             UPDATE,
-            {
-              name: 'updateOneClub',
-              args: [
-                {
-                  name: 'input',
-                  type: {
-                    kind: TypeKind.NON_NULL,
-                    ofType: {
-                      kind: TypeKind.INPUT_OBJECT,
-                      name: 'UpdateOneClubInput',
-                    },
-                  },
-                  defaultValue: null,
-                },
-              ],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.OBJECT,
-                  name: 'Club',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
+            resource[UPDATE],
             {
               input: {
                 id: '53b2e780-6a32-4554-a1e3-ca0913e96d1a',
@@ -773,6 +494,10 @@ describe(buildGqlQuery.name, () => {
                 type
                 coordinates
               }
+              phoneNumbers
+              emails
+              active
+              amenities
               createdAt
               createdBy
               updatedAt
@@ -783,38 +508,15 @@ describe(buildGqlQuery.name, () => {
       );
     });
   });
+
   describe(CREATE, () => {
     it('returns the correct query', () => {
       expect(
         print(
-          buildGqlQuery(introspectionResults)(
+          buildGqlQuery(introspectionResult)(
             resource,
             CREATE,
-            {
-              name: 'createOneClub',
-              args: [
-                {
-                  name: 'input',
-                  type: {
-                    kind: TypeKind.NON_NULL,
-                    ofType: {
-                      kind: TypeKind.INPUT_OBJECT,
-                      name: 'CreateOneClubInput',
-                    },
-                  },
-                  defaultValue: null,
-                },
-              ],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.OBJECT,
-                  name: 'Club',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
+            resource[CREATE],
             {
               input: { club: { name: 'pipipi' } },
             },
@@ -831,6 +533,10 @@ describe(buildGqlQuery.name, () => {
                 type
                 coordinates
               }
+              phoneNumbers
+              emails
+              active
+              amenities
               createdAt
               createdBy
               updatedAt
@@ -841,38 +547,15 @@ describe(buildGqlQuery.name, () => {
       );
     });
   });
+
   describe(DELETE, () => {
     it('returns the correct query', () => {
       expect(
         print(
-          buildGqlQuery(introspectionResults)(
+          buildGqlQuery(introspectionResult)(
             resource,
             DELETE,
-            {
-              name: 'deleteOneClub',
-              args: [
-                {
-                  name: 'input',
-                  type: {
-                    kind: TypeKind.NON_NULL,
-                    ofType: {
-                      kind: TypeKind.INPUT_OBJECT,
-                      name: 'DeleteOneClubInput',
-                    },
-                  },
-                  defaultValue: null,
-                },
-              ],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.OBJECT,
-                  name: 'ClubDeleteResponse',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
+            resource[DELETE],
             { input: { id: '01f5b50b-f526-4d8c-8480-d001b2a3bb76' } },
           ),
         ),
@@ -887,6 +570,10 @@ describe(buildGqlQuery.name, () => {
                 type
                 coordinates
               }
+              phoneNumbers
+              emails
+              active
+              amenities
               createdAt
               createdBy
               updatedAt
@@ -901,10 +588,10 @@ describe(buildGqlQuery.name, () => {
   it(DELETE_MANY, () => {
     expect(
       print(
-        buildGqlQuery(introspectionResults)(
+        buildGqlQuery(introspectionResult)(
           resource,
           DELETE_MANY,
-          queryTypeDeleteMany,
+          resource[DELETE_MANY],
           { input: { filter: { id: { in: [1, 2, 3] } } } },
         ),
       ),
@@ -922,14 +609,14 @@ describe(buildGqlQuery.name, () => {
   it(UPDATE_MANY, () => {
     expect(
       print(
-        buildGqlQuery(introspectionResults)(
+        buildGqlQuery(introspectionResult)(
           resource,
           UPDATE_MANY,
-          queryTypeUpdateMany,
+          resource[UPDATE_MANY],
           {
             input: {
               filter: { id: { in: [1, 2, 3] } },
-              update: params,
+              update: {},
             },
           },
         ),

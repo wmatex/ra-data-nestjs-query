@@ -9,14 +9,9 @@ import {
   UPDATE_MANY,
 } from 'ra-core';
 import buildVariables from './buildVariables';
-import { IntrospectionResult } from 'ra-data-graphql';
-import {
-  IntrospectionField,
-  IntrospectionScalarType,
-  IntrospectionSchema,
-  TypeKind,
-} from 'graphql';
+import { IntrospectionField, IntrospectionScalarType, TypeKind } from 'graphql';
 import { vi } from 'vitest';
+import { introspectionResult } from './test-introspection';
 
 global.console = {
   ...console,
@@ -28,1066 +23,10 @@ global.console = {
   error: vi.fn(),
 };
 
+const getResourceByName = (name: string) =>
+  introspectionResult.resources.find((resource) => resource.type.name === name);
+
 describe(buildVariables.name, () => {
-  const introspectionResult: IntrospectionResult = {
-    queries: [],
-    resources: [
-      {
-        type: {
-          kind: TypeKind.OBJECT,
-          name: 'Club',
-          description: 'RESOURCE',
-          fields: [
-            {
-              name: 'id',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'ID',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'name',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'location',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.OBJECT,
-                  name: 'Point',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'createdAt',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'DateTime',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'createdBy',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'updatedAt',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'DateTime',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'updatedBy',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-          ],
-          interfaces: [],
-        },
-      },
-      {
-        type: {
-          kind: TypeKind.OBJECT,
-          name: 'Field',
-          description: 'RESOURCE',
-          fields: [
-            {
-              name: 'id',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'ID',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'name',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'sport',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: 'ENUM',
-                  name: 'Sports',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'price',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'Float',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'active',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'Boolean',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'createdAt',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'DateTime',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'createdBy',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'updatedAt',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'DateTime',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'updatedBy',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-            {
-              name: 'club',
-              args: [],
-              type: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.OBJECT,
-                  name: 'Club',
-                },
-              },
-              isDeprecated: false,
-              deprecationReason: null,
-            },
-          ],
-          interfaces: [],
-        },
-      },
-    ],
-    schema: {} as IntrospectionSchema,
-    types: [
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'UpdateOneClubInput',
-        inputFields: [
-          {
-            name: 'id',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.SCALAR,
-                name: 'ID',
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'update',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'UpdateClubInput',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'UpdateClubInput',
-        inputFields: [
-          {
-            name: 'name',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'location',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'PointInput',
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'PointInput',
-        inputFields: [
-          {
-            name: 'type',
-            description: 'Point',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.SCALAR,
-                name: 'String',
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'coordinates',
-            description: '[lon, lat]',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.LIST,
-                ofType: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.SCALAR,
-                    name: 'Float',
-                  },
-                },
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'DeleteManyClubsInput',
-        inputFields: [
-          {
-            name: 'filter',
-            description: 'Filter to find records to delete',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'ClubDeleteFilter',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'ClubDeleteFilter',
-        inputFields: [
-          {
-            name: 'and',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.INPUT_OBJECT,
-                  name: 'ClubDeleteFilter',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'or',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.INPUT_OBJECT,
-                  name: 'ClubDeleteFilter',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'id',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'IDFilterComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'name',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'StringFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'active',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'BooleanFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'createdAt',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'DateFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'createdBy',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'StringFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'updatedAt',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'DateFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'updatedBy',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'StringFieldComparison',
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'IDFilterComparison',
-        inputFields: [
-          {
-            name: 'is',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'isNot',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'eq',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'neq',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'gt',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'gte',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'lt',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'lte',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'like',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notLike',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'iLike',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notILike',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'ID',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'in',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'ID',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notIn',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'ID',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'StringFieldComparison',
-        inputFields: [
-          {
-            name: 'is',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'isNot',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'eq',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'neq',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'gt',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'gte',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'lt',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'lte',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'like',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notLike',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'iLike',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notILike',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'String',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'in',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notIn',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'String',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'BooleanFieldComparison',
-        inputFields: [
-          {
-            name: 'is',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'isNot',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'DateFieldComparison',
-        inputFields: [
-          {
-            name: 'is',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'isNot',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'Boolean',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'eq',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'DateTime',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'neq',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'DateTime',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'gt',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'DateTime',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'gte',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'DateTime',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'lt',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'DateTime',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'lte',
-            type: {
-              kind: TypeKind.SCALAR,
-              name: 'DateTime',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'in',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'DateTime',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notIn',
-            type: {
-              kind: TypeKind.LIST,
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.SCALAR,
-                  name: 'DateTime',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'between',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'DateFieldComparisonBetween',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'notBetween',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'DateFieldComparisonBetween',
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'DateFieldComparisonBetween',
-        inputFields: [
-          {
-            name: 'lower',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.SCALAR,
-                name: 'DateTime',
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'upper',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.SCALAR,
-                name: 'DateTime',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'CreateOneClubInput',
-        inputFields: [
-          {
-            name: 'club',
-            description: 'The record to create',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'CreateClubInput',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'CreateClubInput',
-        inputFields: [
-          {
-            name: 'name',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.SCALAR,
-                name: 'String',
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'address',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.SCALAR,
-                name: 'String',
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'location',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'PointInput',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'UpdateManyClubsInput',
-        inputFields: [
-          {
-            name: 'filter',
-            description: 'Filter used to find fields to update',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'ClubUpdateFilter',
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'update',
-            description:
-              'The update to apply to all records found using the filter',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'UpdateClubInput',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-      {
-        isOneOf: true,
-        kind: TypeKind.INPUT_OBJECT,
-        name: 'ClubUpdateFilter',
-        inputFields: [
-          {
-            name: 'and',
-            type: {
-              kind: 'LIST',
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.INPUT_OBJECT,
-                  name: 'ClubUpdateFilter',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'or',
-            type: {
-              kind: 'LIST',
-              ofType: {
-                kind: TypeKind.NON_NULL,
-                ofType: {
-                  kind: TypeKind.INPUT_OBJECT,
-                  name: 'ClubUpdateFilter',
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'id',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'IDFilterComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'name',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'StringFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'active',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'BooleanFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'createdAt',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'DateFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'createdBy',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'StringFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'updatedAt',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'DateFieldComparison',
-            },
-            defaultValue: null,
-          },
-          {
-            name: 'updatedBy',
-            type: {
-              kind: TypeKind.INPUT_OBJECT,
-              name: 'StringFieldComparison',
-            },
-            defaultValue: null,
-          },
-        ],
-      },
-    ],
-  };
   describe(GET_LIST, () => {
     it('returns correct variables', () => {
       const params = {
@@ -1146,38 +85,15 @@ describe(buildVariables.name, () => {
           extraFieldToIgnore: 'pipipi',
         },
       };
-      const queryType: IntrospectionField = {
-        name: 'createOneClub',
-        args: [
-          {
-            name: 'input',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'CreateOneClubInput',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: TypeKind.OBJECT,
-            name: 'Club',
-          },
-        },
-        isDeprecated: false,
-        deprecationReason: null,
-      };
+
+      const resource = getResourceByName('Club');
 
       expect(
         buildVariables(introspectionResult)(
-          introspectionResult.resources[0],
+          resource,
           CREATE,
           params,
-          queryType,
+          resource[CREATE],
         ),
       ).toEqual({
         input: {
@@ -1210,38 +126,15 @@ describe(buildVariables.name, () => {
           updatedBy: 'c2415901-faa3-43c3-9da7-f29de98e6988',
         },
       };
-      const queryType: IntrospectionField = {
-        name: 'updateOneClub',
-        args: [
-          {
-            name: 'input',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'UpdateOneClubInput',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: TypeKind.OBJECT,
-            name: 'Club',
-          },
-        },
-        isDeprecated: false,
-        deprecationReason: null,
-      };
+
+      const resource = getResourceByName('Club');
 
       expect(
         buildVariables(introspectionResult)(
-          introspectionResult.resources[0],
+          resource,
           UPDATE,
           params,
-          queryType,
+          resource[UPDATE],
         ),
       ).toEqual({
         input: {
@@ -1264,12 +157,14 @@ describe(buildVariables.name, () => {
         ids: ['tag1', 'tag2'],
       };
 
+      const resource = getResourceByName('Club');
+
       expect(
         buildVariables(introspectionResult)(
-          introspectionResult.resources[0],
+          resource,
           GET_MANY,
           params,
-          {},
+          resource[GET_MANY],
         ),
       ).toEqual({
         filter: { id: { in: ['tag1', 'tag2'] } },
@@ -1287,15 +182,53 @@ describe(buildVariables.name, () => {
         sort: { field: 'name', order: 'ASC' },
       };
 
+      const resource = getResourceByName('Field');
+
       expect(
         buildVariables(introspectionResult)(
-          introspectionResult.resources[1], // fields, which are defined as entities that exist within a club
+          resource,
           GET_MANY_REFERENCE,
           params,
-          {},
+          resource[GET_MANY_REFERENCE],
         ),
       ).toEqual({
         filter: { club: { id: { eq: params.id } }, sport: { eq: 'Football' } },
+        paging: {
+          limit: 10,
+          offset: 0,
+        },
+        sorting: [
+          {
+            field: 'name',
+            direction: 'ASC',
+          },
+        ],
+      });
+    });
+
+    it('handles arrays of references properly (ReferenceManyField)', () => {
+      const params = {
+        target: 'timeSlot',
+        id: [
+          '5beff9db-9a74-4308-be21-52a45da28dca',
+          '7eac668a-de0a-4796-a4f9-5f2a1df76d9b',
+          '56d9b879-5acc-4d5e-9ab1-8952a89b460a',
+        ],
+        pagination: { page: 1, perPage: 10 },
+        sort: { field: 'name', order: 'ASC' },
+      };
+
+      const resource = getResourceByName('Booking');
+
+      expect(
+        buildVariables(introspectionResult)(
+          resource,
+          GET_MANY_REFERENCE,
+          params,
+          resource[GET_MANY_REFERENCE],
+        ),
+      ).toEqual({
+        filter: { timeSlot: { id: { in: params.id } } },
         paging: {
           limit: 10,
           offset: 0,
@@ -1315,19 +248,15 @@ describe(buildVariables.name, () => {
       const params = {
         id: 'post1',
       };
+
+      const resource = getResourceByName('Club');
+
       expect(
         buildVariables(introspectionResult)(
-          {
-            type: {
-              kind: TypeKind.OBJECT,
-              name: 'Post',
-              fields: [],
-              interfaces: [],
-            },
-          },
+          resource,
           DELETE,
           params,
-          {},
+          resource[DELETE],
         ),
       ).toEqual({
         id: 'post1',
@@ -1343,36 +272,15 @@ describe(buildVariables.name, () => {
           '7aebbf30-56f6-4f84-a4c8-6da499608b2a',
         ],
       };
+
+      const resource = getResourceByName('Club');
+
       expect(
         buildVariables(introspectionResult)(
-          introspectionResult.resources[0],
+          resource,
           DELETE_MANY,
           params,
-          {
-            name: 'deleteManyClubs',
-            args: [
-              {
-                name: 'input',
-                type: {
-                  kind: TypeKind.NON_NULL,
-                  ofType: {
-                    kind: TypeKind.INPUT_OBJECT,
-                    name: 'DeleteManyClubsInput',
-                  },
-                },
-                defaultValue: null,
-              },
-            ],
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.OBJECT,
-                name: 'DeleteManyResponse',
-              },
-            },
-            isDeprecated: false,
-            deprecationReason: null,
-          },
+          resource[DELETE_MANY],
         ),
       ).toEqual({
         input: {
@@ -1404,38 +312,14 @@ describe(buildVariables.name, () => {
         },
       };
 
-      const queryType: IntrospectionField = {
-        name: 'updateManyClubs',
-        args: [
-          {
-            name: 'input',
-            type: {
-              kind: TypeKind.NON_NULL,
-              ofType: {
-                kind: TypeKind.INPUT_OBJECT,
-                name: 'UpdateManyClubsInput',
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-        type: {
-          kind: TypeKind.NON_NULL,
-          ofType: {
-            kind: TypeKind.OBJECT,
-            name: 'UpdateManyResponse',
-          },
-        },
-        isDeprecated: false,
-        deprecationReason: null,
-      };
+      const resource = getResourceByName('Club');
 
       expect(
         buildVariables(introspectionResult)(
-          introspectionResult.resources[0],
+          resource,
           UPDATE_MANY,
           params,
-          queryType,
+          resource[UPDATE_MANY],
         ),
       ).toEqual({
         input: {
