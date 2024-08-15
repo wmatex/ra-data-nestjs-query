@@ -3545,7 +3545,7 @@ export const introspectionResult = {
         },
         {
           __typename: '__Field',
-          name: 'date',
+          name: 'start',
           description: null,
           args: [],
           type: {
@@ -3555,7 +3555,26 @@ export const introspectionResult = {
             ofType: {
               __typename: '__Type',
               kind: 'SCALAR',
-              name: 'String',
+              name: 'DateTime',
+              ofType: null,
+            },
+          },
+          isDeprecated: false,
+          deprecationReason: null,
+        },
+        {
+          __typename: '__Field',
+          name: 'end',
+          description: null,
+          args: [],
+          type: {
+            __typename: '__Type',
+            kind: 'NON_NULL',
+            name: null,
+            ofType: {
+              __typename: '__Type',
+              kind: 'SCALAR',
+              name: 'DateTime',
               ofType: null,
             },
           },
@@ -3640,7 +3659,7 @@ export const introspectionResult = {
         },
         {
           __typename: '__Field',
-          name: 'timeSlot',
+          name: 'field',
           description: null,
           args: [],
           type: {
@@ -3650,7 +3669,7 @@ export const introspectionResult = {
             ofType: {
               __typename: '__Type',
               kind: 'OBJECT',
-              name: 'TimeSlot',
+              name: 'Field',
               ofType: null,
             },
           },
@@ -3699,13 +3718,27 @@ export const introspectionResult = {
         },
         {
           __typename: '__Field',
-          name: 'date',
+          name: 'start',
           description: null,
           args: [],
           type: {
             __typename: '__Type',
             kind: 'SCALAR',
-            name: 'String',
+            name: 'DateTime',
+            ofType: null,
+          },
+          isDeprecated: false,
+          deprecationReason: null,
+        },
+        {
+          __typename: '__Field',
+          name: 'end',
+          description: null,
+          args: [],
+          type: {
+            __typename: '__Type',
+            kind: 'SCALAR',
+            name: 'DateTime',
             ofType: null,
           },
           isDeprecated: false,
@@ -4717,12 +4750,24 @@ export const introspectionResult = {
         },
         {
           __typename: '__InputValue',
-          name: 'date',
+          name: 'start',
           description: null,
           type: {
             __typename: '__Type',
             kind: 'INPUT_OBJECT',
-            name: 'StringFieldComparison',
+            name: 'DateFieldComparison',
+            ofType: null,
+          },
+          defaultValue: null,
+        },
+        {
+          __typename: '__InputValue',
+          name: 'end',
+          description: null,
+          type: {
+            __typename: '__Type',
+            kind: 'INPUT_OBJECT',
+            name: 'DateFieldComparison',
             ofType: null,
           },
           defaultValue: null,
@@ -4777,12 +4822,12 @@ export const introspectionResult = {
         },
         {
           __typename: '__InputValue',
-          name: 'timeSlot',
+          name: 'field',
           description: null,
           type: {
             __typename: '__Type',
             kind: 'INPUT_OBJECT',
-            name: 'BookingFilterTimeSlotFilter',
+            name: 'BookingFilterFieldFilter',
             ofType: null,
           },
           defaultValue: null,
@@ -4795,7 +4840,7 @@ export const introspectionResult = {
     {
       __typename: '__Type',
       kind: 'INPUT_OBJECT',
-      name: 'BookingFilterTimeSlotFilter',
+      name: 'BookingFilterFieldFilter',
       description: null,
       fields: null,
       inputFields: [
@@ -4814,7 +4859,7 @@ export const introspectionResult = {
               ofType: {
                 __typename: '__Type',
                 kind: 'INPUT_OBJECT',
-                name: 'BookingFilterTimeSlotFilter',
+                name: 'BookingFilterFieldFilter',
                 ofType: null,
               },
             },
@@ -4836,7 +4881,7 @@ export const introspectionResult = {
               ofType: {
                 __typename: '__Type',
                 kind: 'INPUT_OBJECT',
-                name: 'BookingFilterTimeSlotFilter',
+                name: 'BookingFilterFieldFilter',
                 ofType: null,
               },
             },
@@ -4857,7 +4902,7 @@ export const introspectionResult = {
         },
         {
           __typename: '__InputValue',
-          name: 'start',
+          name: 'name',
           description: null,
           type: {
             __typename: '__Type',
@@ -4869,12 +4914,36 @@ export const introspectionResult = {
         },
         {
           __typename: '__InputValue',
-          name: 'end',
+          name: 'sport',
           description: null,
           type: {
             __typename: '__Type',
             kind: 'INPUT_OBJECT',
-            name: 'StringFieldComparison',
+            name: 'SportsFilterComparison',
+            ofType: null,
+          },
+          defaultValue: null,
+        },
+        {
+          __typename: '__InputValue',
+          name: 'price',
+          description: null,
+          type: {
+            __typename: '__Type',
+            kind: 'INPUT_OBJECT',
+            name: 'NumberFieldComparison',
+            ofType: null,
+          },
+          defaultValue: null,
+        },
+        {
+          __typename: '__InputValue',
+          name: 'active',
+          description: null,
+          type: {
+            __typename: '__Type',
+            kind: 'INPUT_OBJECT',
+            name: 'BooleanFieldComparison',
             ofType: null,
           },
           defaultValue: null,
@@ -5008,7 +5077,14 @@ export const introspectionResult = {
         },
         {
           __typename: '__EnumValue',
-          name: 'date',
+          name: 'start',
+          description: null,
+          isDeprecated: false,
+          deprecationReason: null,
+        },
+        {
+          __typename: '__EnumValue',
+          name: 'end',
           description: null,
           isDeprecated: false,
           deprecationReason: null,
@@ -6671,193 +6747,6 @@ export const introspectionResult = {
     {
       __typename: '__Type',
       kind: 'INPUT_OBJECT',
-      name: 'UpdateManyTimeSlotsInput',
-      description: null,
-      fields: null,
-      inputFields: [
-        {
-          __typename: '__InputValue',
-          name: 'filter',
-          description: 'Filter used to find fields to update',
-          type: {
-            __typename: '__Type',
-            kind: 'NON_NULL',
-            name: null,
-            ofType: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'TimeSlotUpdateFilter',
-              ofType: null,
-            },
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'update',
-          description:
-            'The update to apply to all records found using the filter',
-          type: {
-            __typename: '__Type',
-            kind: 'NON_NULL',
-            name: null,
-            ofType: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'UpdateTimeSlotInput',
-              ofType: null,
-            },
-          },
-          defaultValue: null,
-        },
-      ],
-      interfaces: null,
-      enumValues: null,
-      possibleTypes: null,
-    },
-    {
-      __typename: '__Type',
-      kind: 'INPUT_OBJECT',
-      name: 'TimeSlotUpdateFilter',
-      description: null,
-      fields: null,
-      inputFields: [
-        {
-          __typename: '__InputValue',
-          name: 'and',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'LIST',
-            name: null,
-            ofType: {
-              __typename: '__Type',
-              kind: 'NON_NULL',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'INPUT_OBJECT',
-                name: 'TimeSlotUpdateFilter',
-                ofType: null,
-              },
-            },
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'or',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'LIST',
-            name: null,
-            ofType: {
-              __typename: '__Type',
-              kind: 'NON_NULL',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'INPUT_OBJECT',
-                name: 'TimeSlotUpdateFilter',
-                ofType: null,
-              },
-            },
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'id',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'INPUT_OBJECT',
-            name: 'IDFilterComparison',
-            ofType: null,
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'start',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'INPUT_OBJECT',
-            name: 'StringFieldComparison',
-            ofType: null,
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'end',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'INPUT_OBJECT',
-            name: 'StringFieldComparison',
-            ofType: null,
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'createdAt',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'INPUT_OBJECT',
-            name: 'DateFieldComparison',
-            ofType: null,
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'createdBy',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'INPUT_OBJECT',
-            name: 'StringFieldComparison',
-            ofType: null,
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'updatedAt',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'INPUT_OBJECT',
-            name: 'DateFieldComparison',
-            ofType: null,
-          },
-          defaultValue: null,
-        },
-        {
-          __typename: '__InputValue',
-          name: 'updatedBy',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'INPUT_OBJECT',
-            name: 'StringFieldComparison',
-            ofType: null,
-          },
-          defaultValue: null,
-        },
-      ],
-      interfaces: null,
-      enumValues: null,
-      possibleTypes: null,
-    },
-    {
-      __typename: '__Type',
-      kind: 'INPUT_OBJECT',
       name: 'DeleteOneTimeSlotInput',
       description: null,
       fields: null,
@@ -7108,7 +6997,7 @@ export const introspectionResult = {
         },
         {
           __typename: '__InputValue',
-          name: 'date',
+          name: 'start',
           description: null,
           type: {
             __typename: '__Type',
@@ -7117,7 +7006,7 @@ export const introspectionResult = {
             ofType: {
               __typename: '__Type',
               kind: 'SCALAR',
-              name: 'String',
+              name: 'DateTime',
               ofType: null,
             },
           },
@@ -7125,7 +7014,24 @@ export const introspectionResult = {
         },
         {
           __typename: '__InputValue',
-          name: 'timeSlot',
+          name: 'end',
+          description: null,
+          type: {
+            __typename: '__Type',
+            kind: 'NON_NULL',
+            name: null,
+            ofType: {
+              __typename: '__Type',
+              kind: 'SCALAR',
+              name: 'DateTime',
+              ofType: null,
+            },
+          },
+          defaultValue: null,
+        },
+        {
+          __typename: '__InputValue',
+          name: 'field',
           description: null,
           type: {
             __typename: '__Type',
@@ -7268,12 +7174,24 @@ export const introspectionResult = {
         },
         {
           __typename: '__InputValue',
-          name: 'date',
+          name: 'start',
           description: null,
           type: {
             __typename: '__Type',
             kind: 'INPUT_OBJECT',
-            name: 'StringFieldComparison',
+            name: 'DateFieldComparison',
+            ofType: null,
+          },
+          defaultValue: null,
+        },
+        {
+          __typename: '__InputValue',
+          name: 'end',
+          description: null,
+          type: {
+            __typename: '__Type',
+            kind: 'INPUT_OBJECT',
+            name: 'DateFieldComparison',
             ofType: null,
           },
           defaultValue: null,
@@ -9321,43 +9239,6 @@ export const introspectionResult = {
     },
     {
       __typename: '__Field',
-      name: 'updateManyTimeSlots',
-      description: null,
-      args: [
-        {
-          __typename: '__InputValue',
-          name: 'input',
-          description: null,
-          type: {
-            __typename: '__Type',
-            kind: 'NON_NULL',
-            name: null,
-            ofType: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'UpdateManyTimeSlotsInput',
-              ofType: null,
-            },
-          },
-          defaultValue: null,
-        },
-      ],
-      type: {
-        __typename: '__Type',
-        kind: 'NON_NULL',
-        name: null,
-        ofType: {
-          __typename: '__Type',
-          kind: 'OBJECT',
-          name: 'UpdateManyResponse',
-          ofType: null,
-        },
-      },
-      isDeprecated: false,
-      deprecationReason: null,
-    },
-    {
-      __typename: '__Field',
       name: 'deleteOneTimeSlot',
       description: null,
       args: [
@@ -10836,43 +10717,6 @@ export const introspectionResult = {
         isDeprecated: false,
         deprecationReason: null,
       },
-      UPDATE_MANY: {
-        __typename: '__Field',
-        name: 'updateManyTimeSlots',
-        description: null,
-        args: [
-          {
-            __typename: '__InputValue',
-            name: 'input',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'NON_NULL',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'INPUT_OBJECT',
-                name: 'UpdateManyTimeSlotsInput',
-                ofType: null,
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-        type: {
-          __typename: '__Type',
-          kind: 'NON_NULL',
-          name: null,
-          ofType: {
-            __typename: '__Type',
-            kind: 'OBJECT',
-            name: 'UpdateManyResponse',
-            ofType: null,
-          },
-        },
-        isDeprecated: false,
-        deprecationReason: null,
-      },
       DELETE_MANY: {
         __typename: '__Field',
         name: 'deleteManyTimeSlots',
@@ -11696,7 +11540,7 @@ export const introspectionResult = {
           },
           {
             __typename: '__Field',
-            name: 'date',
+            name: 'start',
             description: null,
             args: [],
             type: {
@@ -11706,7 +11550,26 @@ export const introspectionResult = {
               ofType: {
                 __typename: '__Type',
                 kind: 'SCALAR',
-                name: 'String',
+                name: 'DateTime',
+                ofType: null,
+              },
+            },
+            isDeprecated: false,
+            deprecationReason: null,
+          },
+          {
+            __typename: '__Field',
+            name: 'end',
+            description: null,
+            args: [],
+            type: {
+              __typename: '__Type',
+              kind: 'NON_NULL',
+              name: null,
+              ofType: {
+                __typename: '__Type',
+                kind: 'SCALAR',
+                name: 'DateTime',
                 ofType: null,
               },
             },
@@ -11791,7 +11654,7 @@ export const introspectionResult = {
           },
           {
             __typename: '__Field',
-            name: 'timeSlot',
+            name: 'field',
             description: null,
             args: [],
             type: {
@@ -11801,7 +11664,7 @@ export const introspectionResult = {
               ofType: {
                 __typename: '__Type',
                 kind: 'OBJECT',
-                name: 'TimeSlot',
+                name: 'Field',
                 ofType: null,
               },
             },
@@ -16369,7 +16232,7 @@ export const introspectionResult = {
           },
           {
             __typename: '__Field',
-            name: 'date',
+            name: 'start',
             description: null,
             args: [],
             type: {
@@ -16379,7 +16242,26 @@ export const introspectionResult = {
               ofType: {
                 __typename: '__Type',
                 kind: 'SCALAR',
-                name: 'String',
+                name: 'DateTime',
+                ofType: null,
+              },
+            },
+            isDeprecated: false,
+            deprecationReason: null,
+          },
+          {
+            __typename: '__Field',
+            name: 'end',
+            description: null,
+            args: [],
+            type: {
+              __typename: '__Type',
+              kind: 'NON_NULL',
+              name: null,
+              ofType: {
+                __typename: '__Type',
+                kind: 'SCALAR',
+                name: 'DateTime',
                 ofType: null,
               },
             },
@@ -16464,7 +16346,7 @@ export const introspectionResult = {
           },
           {
             __typename: '__Field',
-            name: 'timeSlot',
+            name: 'field',
             description: null,
             args: [],
             type: {
@@ -16474,7 +16356,7 @@ export const introspectionResult = {
               ofType: {
                 __typename: '__Type',
                 kind: 'OBJECT',
-                name: 'TimeSlot',
+                name: 'Field',
                 ofType: null,
               },
             },
@@ -16523,13 +16405,27 @@ export const introspectionResult = {
           },
           {
             __typename: '__Field',
-            name: 'date',
+            name: 'start',
             description: null,
             args: [],
             type: {
               __typename: '__Type',
               kind: 'SCALAR',
-              name: 'String',
+              name: 'DateTime',
+              ofType: null,
+            },
+            isDeprecated: false,
+            deprecationReason: null,
+          },
+          {
+            __typename: '__Field',
+            name: 'end',
+            description: null,
+            args: [],
+            type: {
+              __typename: '__Type',
+              kind: 'SCALAR',
+              name: 'DateTime',
               ofType: null,
             },
             isDeprecated: false,
@@ -18025,12 +17921,24 @@ export const introspectionResult = {
           },
           {
             __typename: '__InputValue',
-            name: 'date',
+            name: 'start',
             description: null,
             type: {
               __typename: '__Type',
               kind: 'INPUT_OBJECT',
-              name: 'StringFieldComparison',
+              name: 'DateFieldComparison',
+              ofType: null,
+            },
+            defaultValue: null,
+          },
+          {
+            __typename: '__InputValue',
+            name: 'end',
+            description: null,
+            type: {
+              __typename: '__Type',
+              kind: 'INPUT_OBJECT',
+              name: 'DateFieldComparison',
               ofType: null,
             },
             defaultValue: null,
@@ -18085,12 +17993,12 @@ export const introspectionResult = {
           },
           {
             __typename: '__InputValue',
-            name: 'timeSlot',
+            name: 'field',
             description: null,
             type: {
               __typename: '__Type',
               kind: 'INPUT_OBJECT',
-              name: 'BookingFilterTimeSlotFilter',
+              name: 'BookingFilterFieldFilter',
               ofType: null,
             },
             defaultValue: null,
@@ -18103,7 +18011,7 @@ export const introspectionResult = {
       {
         __typename: '__Type',
         kind: 'INPUT_OBJECT',
-        name: 'BookingFilterTimeSlotFilter',
+        name: 'BookingFilterFieldFilter',
         description: null,
         fields: null,
         inputFields: [
@@ -18122,7 +18030,7 @@ export const introspectionResult = {
                 ofType: {
                   __typename: '__Type',
                   kind: 'INPUT_OBJECT',
-                  name: 'BookingFilterTimeSlotFilter',
+                  name: 'BookingFilterFieldFilter',
                   ofType: null,
                 },
               },
@@ -18144,7 +18052,7 @@ export const introspectionResult = {
                 ofType: {
                   __typename: '__Type',
                   kind: 'INPUT_OBJECT',
-                  name: 'BookingFilterTimeSlotFilter',
+                  name: 'BookingFilterFieldFilter',
                   ofType: null,
                 },
               },
@@ -18165,7 +18073,7 @@ export const introspectionResult = {
           },
           {
             __typename: '__InputValue',
-            name: 'start',
+            name: 'name',
             description: null,
             type: {
               __typename: '__Type',
@@ -18177,12 +18085,36 @@ export const introspectionResult = {
           },
           {
             __typename: '__InputValue',
-            name: 'end',
+            name: 'sport',
             description: null,
             type: {
               __typename: '__Type',
               kind: 'INPUT_OBJECT',
-              name: 'StringFieldComparison',
+              name: 'SportsFilterComparison',
+              ofType: null,
+            },
+            defaultValue: null,
+          },
+          {
+            __typename: '__InputValue',
+            name: 'price',
+            description: null,
+            type: {
+              __typename: '__Type',
+              kind: 'INPUT_OBJECT',
+              name: 'NumberFieldComparison',
+              ofType: null,
+            },
+            defaultValue: null,
+          },
+          {
+            __typename: '__InputValue',
+            name: 'active',
+            description: null,
+            type: {
+              __typename: '__Type',
+              kind: 'INPUT_OBJECT',
+              name: 'BooleanFieldComparison',
               ofType: null,
             },
             defaultValue: null,
@@ -18316,7 +18248,14 @@ export const introspectionResult = {
           },
           {
             __typename: '__EnumValue',
-            name: 'date',
+            name: 'start',
+            description: null,
+            isDeprecated: false,
+            deprecationReason: null,
+          },
+          {
+            __typename: '__EnumValue',
+            name: 'end',
             description: null,
             isDeprecated: false,
             deprecationReason: null,
@@ -18796,43 +18735,6 @@ export const introspectionResult = {
                 __typename: '__Type',
                 kind: 'OBJECT',
                 name: 'TimeSlot',
-                ofType: null,
-              },
-            },
-            isDeprecated: false,
-            deprecationReason: null,
-          },
-          {
-            __typename: '__Field',
-            name: 'updateManyTimeSlots',
-            description: null,
-            args: [
-              {
-                __typename: '__InputValue',
-                name: 'input',
-                description: null,
-                type: {
-                  __typename: '__Type',
-                  kind: 'NON_NULL',
-                  name: null,
-                  ofType: {
-                    __typename: '__Type',
-                    kind: 'INPUT_OBJECT',
-                    name: 'UpdateManyTimeSlotsInput',
-                    ofType: null,
-                  },
-                },
-                defaultValue: null,
-              },
-            ],
-            type: {
-              __typename: '__Type',
-              kind: 'NON_NULL',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'OBJECT',
-                name: 'UpdateManyResponse',
                 ofType: null,
               },
             },
@@ -20657,193 +20559,6 @@ export const introspectionResult = {
       {
         __typename: '__Type',
         kind: 'INPUT_OBJECT',
-        name: 'UpdateManyTimeSlotsInput',
-        description: null,
-        fields: null,
-        inputFields: [
-          {
-            __typename: '__InputValue',
-            name: 'filter',
-            description: 'Filter used to find fields to update',
-            type: {
-              __typename: '__Type',
-              kind: 'NON_NULL',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'INPUT_OBJECT',
-                name: 'TimeSlotUpdateFilter',
-                ofType: null,
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'update',
-            description:
-              'The update to apply to all records found using the filter',
-            type: {
-              __typename: '__Type',
-              kind: 'NON_NULL',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'INPUT_OBJECT',
-                name: 'UpdateTimeSlotInput',
-                ofType: null,
-              },
-            },
-            defaultValue: null,
-          },
-        ],
-        interfaces: null,
-        enumValues: null,
-        possibleTypes: null,
-      },
-      {
-        __typename: '__Type',
-        kind: 'INPUT_OBJECT',
-        name: 'TimeSlotUpdateFilter',
-        description: null,
-        fields: null,
-        inputFields: [
-          {
-            __typename: '__InputValue',
-            name: 'and',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'LIST',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'NON_NULL',
-                name: null,
-                ofType: {
-                  __typename: '__Type',
-                  kind: 'INPUT_OBJECT',
-                  name: 'TimeSlotUpdateFilter',
-                  ofType: null,
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'or',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'LIST',
-              name: null,
-              ofType: {
-                __typename: '__Type',
-                kind: 'NON_NULL',
-                name: null,
-                ofType: {
-                  __typename: '__Type',
-                  kind: 'INPUT_OBJECT',
-                  name: 'TimeSlotUpdateFilter',
-                  ofType: null,
-                },
-              },
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'id',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'IDFilterComparison',
-              ofType: null,
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'start',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'StringFieldComparison',
-              ofType: null,
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'end',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'StringFieldComparison',
-              ofType: null,
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'createdAt',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'DateFieldComparison',
-              ofType: null,
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'createdBy',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'StringFieldComparison',
-              ofType: null,
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'updatedAt',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'DateFieldComparison',
-              ofType: null,
-            },
-            defaultValue: null,
-          },
-          {
-            __typename: '__InputValue',
-            name: 'updatedBy',
-            description: null,
-            type: {
-              __typename: '__Type',
-              kind: 'INPUT_OBJECT',
-              name: 'StringFieldComparison',
-              ofType: null,
-            },
-            defaultValue: null,
-          },
-        ],
-        interfaces: null,
-        enumValues: null,
-        possibleTypes: null,
-      },
-      {
-        __typename: '__Type',
-        kind: 'INPUT_OBJECT',
         name: 'DeleteOneTimeSlotInput',
         description: null,
         fields: null,
@@ -21094,7 +20809,7 @@ export const introspectionResult = {
           },
           {
             __typename: '__InputValue',
-            name: 'date',
+            name: 'start',
             description: null,
             type: {
               __typename: '__Type',
@@ -21103,7 +20818,7 @@ export const introspectionResult = {
               ofType: {
                 __typename: '__Type',
                 kind: 'SCALAR',
-                name: 'String',
+                name: 'DateTime',
                 ofType: null,
               },
             },
@@ -21111,7 +20826,24 @@ export const introspectionResult = {
           },
           {
             __typename: '__InputValue',
-            name: 'timeSlot',
+            name: 'end',
+            description: null,
+            type: {
+              __typename: '__Type',
+              kind: 'NON_NULL',
+              name: null,
+              ofType: {
+                __typename: '__Type',
+                kind: 'SCALAR',
+                name: 'DateTime',
+                ofType: null,
+              },
+            },
+            defaultValue: null,
+          },
+          {
+            __typename: '__InputValue',
+            name: 'field',
             description: null,
             type: {
               __typename: '__Type',
@@ -21254,12 +20986,24 @@ export const introspectionResult = {
           },
           {
             __typename: '__InputValue',
-            name: 'date',
+            name: 'start',
             description: null,
             type: {
               __typename: '__Type',
               kind: 'INPUT_OBJECT',
-              name: 'StringFieldComparison',
+              name: 'DateFieldComparison',
+              ofType: null,
+            },
+            defaultValue: null,
+          },
+          {
+            __typename: '__InputValue',
+            name: 'end',
+            description: null,
+            type: {
+              __typename: '__Type',
+              kind: 'INPUT_OBJECT',
+              name: 'DateFieldComparison',
               ofType: null,
             },
             defaultValue: null,

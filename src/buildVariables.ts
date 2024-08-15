@@ -217,6 +217,13 @@ const getListVariables = (
           };
         }
 
+        if (params.filter[key] && typeof params.filter[key] === 'object') {
+          return {
+            ...acc,
+            [key]: params.filter[key],
+          };
+        }
+
         const operator =
           `${type.kind}:${type.name}` === 'SCALAR:String' ? 'iLike' : 'eq';
 

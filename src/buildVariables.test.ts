@@ -71,6 +71,51 @@ describe(buildVariables.name, () => {
         sorting: [{ field: 'sortField', direction: 'DESC' }],
       });
     });
+
+    it('handles raw filters properly', () => {
+      const params = {
+        filter: {
+          start: {
+            between: {
+              lower: '2024-08-15T03:00:00.000Z',
+              upper: '2024-08-16T02:59:59.999Z',
+            },
+          },
+        },
+        pagination: { page: 1, perPage: 10 },
+        sort: { field: 'name', order: 'ASC' },
+      };
+
+      const resource = getResourceByName('Booking');
+
+      expect(
+        buildVariables(introspectionResult)(
+          resource,
+          GET_LIST,
+          params,
+          resource[GET_LIST],
+        ),
+      ).toEqual({
+        filter: {
+          start: {
+            between: {
+              lower: '2024-08-15T03:00:00.000Z',
+              upper: '2024-08-16T02:59:59.999Z',
+            },
+          },
+        },
+        paging: {
+          limit: 10,
+          offset: 0,
+        },
+        sorting: [
+          {
+            field: 'name',
+            direction: 'ASC',
+          },
+        ],
+      });
+    });
   });
 
   describe(CREATE, () => {
@@ -229,6 +274,54 @@ describe(buildVariables.name, () => {
         ),
       ).toEqual({
         filter: { timeSlot: { id: { in: params.id } } },
+        paging: {
+          limit: 10,
+          offset: 0,
+        },
+        sorting: [
+          {
+            field: 'name',
+            direction: 'ASC',
+          },
+        ],
+      });
+    });
+
+    it('handles raw filters properly', () => {
+      const params = {
+        target: 'field',
+        id: '103daae0-ef3f-4f1b-a114-528df8047cb4',
+        filter: {
+          start: {
+            between: {
+              lower: '2024-08-15T03:00:00.000Z',
+              upper: '2024-08-16T02:59:59.999Z',
+            },
+          },
+        },
+        pagination: { page: 1, perPage: 10 },
+        sort: { field: 'name', order: 'ASC' },
+      };
+
+      const resource = getResourceByName('Booking');
+
+      expect(
+        buildVariables(introspectionResult)(
+          resource,
+          GET_MANY_REFERENCE,
+          params,
+          resource[GET_MANY_REFERENCE],
+        ),
+      ).toEqual({
+        filter: {
+          field: { id: { eq: params.id } },
+          start: {
+            between: {
+              lower: '2024-08-15T03:00:00.000Z',
+              upper: '2024-08-16T02:59:59.999Z',
+            },
+          },
+        },
         paging: {
           limit: 10,
           offset: 0,
