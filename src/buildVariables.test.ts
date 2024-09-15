@@ -213,6 +213,10 @@ describe(buildVariables.name, () => {
         ),
       ).toEqual({
         filter: { id: { in: ['tag1', 'tag2'] } },
+        paging: {
+          limit: 2,
+          offset: 0,
+        },
       });
     });
   });

@@ -44,12 +44,15 @@ export default (introspectionResults: IntrospectionResult) =>
       introspectionResults,
     );
 
+    console.debug('preparedParams', preparedParams);
+
     switch (raFetchMethod) {
       case GET_LIST:
         return getListVariables(resource, preparedParams);
       case GET_MANY:
         return {
           filter: { id: { in: preparedParams.ids } },
+          paging: { limit: preparedParams.ids.length, offset: 0 },
         };
       case GET_MANY_REFERENCE:
         let variables = getListVariables(resource, preparedParams);
