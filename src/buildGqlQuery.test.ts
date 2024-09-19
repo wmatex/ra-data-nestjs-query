@@ -564,20 +564,6 @@ describe(buildGqlQuery.name, () => {
           mutation deleteOneClub($input: DeleteOneClubInput!) {
             data: deleteOneClub(input: $input) {
               id
-              name
-              address
-              location {
-                type
-                coordinates
-              }
-              phoneNumbers
-              emails
-              active
-              amenities
-              createdAt
-              createdBy
-              updatedAt
-              updatedBy
             }
           }
         `),

@@ -25,6 +25,7 @@ import isList from './isList';
 import {
   MutationCreateOneArgs,
   MutationDeleteManyArgs,
+  MutationDeleteOneArgs,
   MutationUpdateManyArgs,
   MutationUpdateOneArgs,
   QueryArgs,
@@ -44,7 +45,7 @@ export default (introspectionResults: IntrospectionResult) =>
       introspectionResults,
     );
 
-    console.debug('preparedParams', preparedParams);
+    console.debug(`${raFetchMethod} preparedParams`, preparedParams);
 
     switch (raFetchMethod) {
       case GET_LIST:
@@ -65,10 +66,14 @@ export default (introspectionResults: IntrospectionResult) =>
         });
         return variables;
       case GET_ONE:
-      case DELETE:
         return {
           id: preparedParams.id,
         };
+      case DELETE:
+        return buildDeleteOneVariables(introspectionResults)(
+          queryType,
+          preparedParams,
+        );
       case DELETE_MANY:
         return buildDeleteManyVariables(introspectionResults)(
           queryType,
@@ -301,6 +306,18 @@ const buildUpdateManyVariables =
       queryType.args,
     );
 
+const buildDeleteOneVariables =
+  (introspectionResult: IntrospectionResult) =>
+  (queryType: IntrospectionField, { id }: any): MutationDeleteOneArgs =>
+    buildCleanObjectByQueryType(introspectionResult)(
+      {
+        input: {
+          id,
+        },
+      },
+      queryType.args,
+    );
+
 const buildDeleteManyVariables =
   (introspectionResult: IntrospectionResult) =>
   (queryType: IntrospectionField, { ids }: any): MutationDeleteManyArgs =>
@@ -317,7 +334,7 @@ const buildDeleteManyVariables =
 
 const buildCleanObjectByQueryType =
   (introspectionResults: IntrospectionResult) =>
-  (obj: any, inputValues: readonly IntrospectionInputValue[]): any => {
+  <T>(obj: any, inputValues: readonly IntrospectionInputValue[]): T => {
     if (typeof obj !== 'object' || obj === null || obj === undefined) {
       return obj;
     }
@@ -377,5 +394,5 @@ const buildCleanObjectByQueryType =
         default:
           return acum;
       }
-    }, {});
+    }, {}) as T;
   };

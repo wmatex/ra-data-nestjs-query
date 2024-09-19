@@ -153,7 +153,7 @@ export default (introspectionResults: IntrospectionResult) =>
               t.name('data'),
               args,
               null,
-              t.selectionSet(fields),
+              t.selectionSet([t.field(t.name('id'))]),
             ),
           ]),
           t.name(queryType.name),

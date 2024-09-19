@@ -68,6 +68,14 @@ export type MutationUpdateManyArgs = {
   input: UpdateManyInput;
 };
 
+export type DeleteOneInput = {
+  id: any;
+};
+
+export type MutationDeleteOneArgs = {
+  input: DeleteOneInput;
+};
+
 export type DeleteManyInput = {
   filter: Filter;
   /** The update to apply. */

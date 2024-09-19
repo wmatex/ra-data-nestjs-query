@@ -356,7 +356,9 @@ describe(buildVariables.name, () => {
           resource[DELETE],
         ),
       ).toEqual({
-        id: 'post1',
+        input: {
+          id: 'post1',
+        },
       });
     });
   });
