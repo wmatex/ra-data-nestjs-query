@@ -44,7 +44,7 @@ function processSparseFields(
   const permittedSparseFields: ProcessedFields = sparseFields.reduce(
     (permitted: ProcessedFields, sparseField: SparseField) => {
       let expandedSparseField: ExpandedSparseField;
-      if (typeof sparseField == 'string')
+      if (typeof sparseField === 'string')
         expandedSparseField = { fields: [sparseField] };
       else {
         const [linkedType, linkedSparseFields] = Object.entries(sparseField)[0];

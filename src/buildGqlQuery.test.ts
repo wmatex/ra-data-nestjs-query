@@ -324,6 +324,50 @@ describe(buildGqlQuery.name, () => {
         `),
       );
     });
+
+    it('returns the correct query with sparse fieldset', () => {
+      expect(
+        print(
+          buildGqlQuery(introspectionResult)(
+            resource,
+            GET_LIST,
+            resource[GET_LIST],
+            {
+              filter: {},
+              paging: {},
+              sorting: {},
+              meta: {
+                sparseFields: ['id', 'name', 'location'],
+              },
+            },
+          ),
+        ),
+      ).toEqual(
+        print(gql`
+          query clubs(
+            $paging: OffsetPaging!
+            $filter: ClubFilter!
+            $sorting: [ClubSort!]!
+          ) {
+            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+              nodes {
+                id
+                name
+                location {
+                  type
+                  coordinates
+                }
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+              totalCount
+            }
+          }
+        `),
+      );
+    });
   });
 
   describe(GET_MANY, () => {
@@ -365,6 +409,50 @@ describe(buildGqlQuery.name, () => {
                 createdBy
                 updatedAt
                 updatedBy
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+              totalCount
+            }
+          }
+        `),
+      );
+    });
+
+    it('returns the correct query with sparse fieldset', () => {
+      expect(
+        print(
+          buildGqlQuery(introspectionResult)(
+            resource,
+            GET_MANY,
+            resource[GET_MANY],
+            {
+              filter: {},
+              paging: {},
+              sorting: {},
+              meta: {
+                sparseFields: ['id', 'name', 'location'],
+              },
+            },
+          ),
+        ),
+      ).toEqual(
+        print(gql`
+          query clubs(
+            $paging: OffsetPaging!
+            $filter: ClubFilter!
+            $sorting: [ClubSort!]!
+          ) {
+            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+              nodes {
+                id
+                name
+                location {
+                  type
+                  coordinates
+                }
               }
               pageInfo {
                 hasNextPage
@@ -428,6 +516,50 @@ describe(buildGqlQuery.name, () => {
         `),
       );
     });
+
+    it('returns the correct query', () => {
+      expect(
+        print(
+          buildGqlQuery(introspectionResult)(
+            resource,
+            GET_MANY_REFERENCE,
+            resource[GET_MANY_REFERENCE],
+            {
+              filter: {},
+              paging: {},
+              sorting: {},
+              meta: {
+                sparseFields: ['id', 'name', 'location'],
+              },
+            },
+          ),
+        ),
+      ).toEqual(
+        print(gql`
+          query clubs(
+            $paging: OffsetPaging!
+            $filter: ClubFilter!
+            $sorting: [ClubSort!]!
+          ) {
+            data: clubs(paging: $paging, filter: $filter, sorting: $sorting) {
+              nodes {
+                id
+                name
+                location {
+                  type
+                  coordinates
+                }
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
+              totalCount
+            }
+          }
+        `),
+      );
+    });
   });
 
   describe(GET_ONE, () => {
@@ -460,6 +592,37 @@ describe(buildGqlQuery.name, () => {
               createdBy
               updatedAt
               updatedBy
+            }
+          }
+        `),
+      );
+    });
+
+    it('returns the correct query with sparse fieldset', () => {
+      expect(
+        print(
+          buildGqlQuery(introspectionResult)(
+            resource,
+            GET_ONE,
+            resource[GET_ONE],
+            {
+              id: 'cc76f014-7dc7-4cc3-bb5b-a7222b9b727f',
+              meta: {
+                sparseFields: ['id', 'name', 'location'],
+              },
+            },
+          ),
+        ),
+      ).toEqual(
+        print(gql`
+          query club($id: ID!) {
+            data: club(id: $id) {
+              id
+              name
+              location {
+                type
+                coordinates
+              }
             }
           }
         `),
