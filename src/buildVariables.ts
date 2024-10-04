@@ -54,6 +54,7 @@ export default (introspectionResults: IntrospectionResult) =>
         return {
           filter: { id: { in: preparedParams.ids } },
           paging: { limit: preparedParams.ids.length, offset: 0 },
+          meta: preparedParams.meta,
         };
       case GET_MANY_REFERENCE:
         let variables = getListVariables(resource, preparedParams);
@@ -68,6 +69,7 @@ export default (introspectionResults: IntrospectionResult) =>
       case GET_ONE:
         return {
           id: preparedParams.id,
+          meta: preparedParams.meta,
         };
       case DELETE:
         return buildDeleteOneVariables(introspectionResults)(
@@ -257,6 +259,10 @@ const getListVariables = (
     variables.sorting = [
       { field: params.sort.field, direction: params.sort.order },
     ];
+  }
+
+  if (params.meta) {
+    variables.meta = params.meta;
   }
 
   return variables;

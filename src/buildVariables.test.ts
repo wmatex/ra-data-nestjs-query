@@ -116,6 +116,56 @@ describe(buildVariables.name, () => {
         ],
       });
     });
+
+    it('returns correct variables with sparse fieldset', () => {
+      const params = {
+        filter: {
+          ids: ['foo1', 'foo2'],
+          title: 'Foo',
+          views: 100,
+        },
+        pagination: { page: 10, perPage: 10 },
+        sort: { field: 'sortField', order: 'DESC' },
+        meta: {
+          sparseFields: ['id', 'name', 'location'],
+        },
+      };
+
+      expect(
+        buildVariables(introspectionResult)(
+          {
+            type: {
+              kind: TypeKind.OBJECT,
+              name: 'Post',
+              fields: [
+                {
+                  name: 'title',
+                  type: {
+                    name: 'String',
+                    kind: TypeKind.SCALAR,
+                  } as IntrospectionScalarType,
+                } as IntrospectionField,
+              ],
+              interfaces: [],
+            },
+          },
+          GET_LIST,
+          params,
+          {},
+        ),
+      ).toEqual({
+        filter: {
+          id: { in: ['foo1', 'foo2'] },
+          title: { iLike: 'Foo' },
+          views: { eq: 100 },
+        },
+        paging: { limit: 10, offset: 90 },
+        sorting: [{ field: 'sortField', direction: 'DESC' }],
+        meta: {
+          sparseFields: ['id', 'name', 'location'],
+        },
+      });
+    });
   });
 
   describe(CREATE, () => {
@@ -216,6 +266,35 @@ describe(buildVariables.name, () => {
         paging: {
           limit: 2,
           offset: 0,
+        },
+      });
+    });
+
+    it('returns correct variables with sparse fieldset', () => {
+      const params = {
+        ids: ['tag1', 'tag2'],
+        meta: {
+          sparseFields: ['id', 'name', 'location'],
+        },
+      };
+
+      const resource = getResourceByName('Club');
+
+      expect(
+        buildVariables(introspectionResult)(
+          resource,
+          GET_MANY,
+          params,
+          resource[GET_MANY],
+        ),
+      ).toEqual({
+        filter: { id: { in: ['tag1', 'tag2'] } },
+        paging: {
+          limit: 2,
+          offset: 0,
+        },
+        meta: {
+          sparseFields: ['id', 'name', 'location'],
         },
       });
     });
@@ -336,6 +415,45 @@ describe(buildVariables.name, () => {
             direction: 'ASC',
           },
         ],
+      });
+    });
+
+    it('returns correct variables with sparse fieldset', () => {
+      const params = {
+        target: 'club',
+        id: '103daae0-ef3f-4f1b-a114-528df8047cb4',
+        filter: { sport: 'Football' },
+        pagination: { page: 1, perPage: 10 },
+        sort: { field: 'name', order: 'ASC' },
+        meta: {
+          sparseFields: ['id', 'name', 'location'],
+        },
+      };
+
+      const resource = getResourceByName('Field');
+
+      expect(
+        buildVariables(introspectionResult)(
+          resource,
+          GET_MANY_REFERENCE,
+          params,
+          resource[GET_MANY_REFERENCE],
+        ),
+      ).toEqual({
+        filter: { club: { id: { eq: params.id } }, sport: { eq: 'Football' } },
+        paging: {
+          limit: 10,
+          offset: 0,
+        },
+        sorting: [
+          {
+            field: 'name',
+            direction: 'ASC',
+          },
+        ],
+        meta: {
+          sparseFields: ['id', 'name', 'location'],
+        },
       });
     });
   });

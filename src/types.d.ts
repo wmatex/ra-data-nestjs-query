@@ -1,3 +1,5 @@
+import type { SparseField } from './buildGqlQuery';
+
 export type FilterComparison<T> = {
   eq?: T;
   gt?: T;
@@ -33,10 +35,15 @@ export type Filter = {
   [key: string]: FilterComparison<any>;
 };
 
+export type QueryMeta = {
+  sparseFields?: SparseField[];
+};
+
 export type QueryArgs = {
   filter?: Filter;
   paging?: { limit: number; offset: number };
   sorting?: { field: string; direction: SortDirection }[];
+  meta?: QueryMeta;
 };
 
 export type CreateOneInput = {

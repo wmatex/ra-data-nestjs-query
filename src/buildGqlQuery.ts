@@ -25,7 +25,7 @@ import * as t from 'graphql-ast-types';
 import getFinalType from './getFinalType';
 import { getGqlType } from './getGqlType';
 
-type SparseField = string | { [k: string]: SparseField[] };
+export type SparseField = string | { [k: string]: SparseField[] };
 type ExpandedSparseField = { linkedType?: string; fields: SparseField[] };
 type ProcessedFields = {
   resourceFields: IntrospectionField[];

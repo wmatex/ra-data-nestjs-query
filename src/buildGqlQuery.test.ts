@@ -517,7 +517,7 @@ describe(buildGqlQuery.name, () => {
       );
     });
 
-    it('returns the correct query', () => {
+    it('returns the correct query with sparse fieldset', () => {
       expect(
         print(
           buildGqlQuery(introspectionResult)(
