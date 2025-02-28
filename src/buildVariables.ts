@@ -212,38 +212,7 @@ const getListVariables = (
         return { ...acc, id: { in: params.filter[key] } };
       }
 
-      const resourceField = resource.type.fields.find((f) => f.name === key);
-
-      if (resourceField) {
-        const type = getFinalType(resourceField.type);
-        const isAList = isList(resourceField.type);
-
-        if (isAList) {
-          return {
-            ...acc,
-            [key]: Array.isArray(params.filter[key])
-              ? params.filter[key].map((value) => sanitizeValue(type, value))
-              : sanitizeValue(type, [params.filter[key]]),
-          };
-        }
-
-        if (params.filter[key] && typeof params.filter[key] === 'object') {
-          return {
-            ...acc,
-            [key]: params.filter[key],
-          };
-        }
-
-        const operator =
-          `${type.kind}:${type.name}` === 'SCALAR:String' ? 'iLike' : 'eq';
-
-        return {
-          ...acc,
-          [key]: { [operator]: sanitizeValue(type, params.filter[key]) },
-        };
-      }
-
-      return { ...acc, [key]: { eq: params.filter[key] } };
+      return { ...acc, [key]: params.filter[key] };
     }, {});
   }
 
